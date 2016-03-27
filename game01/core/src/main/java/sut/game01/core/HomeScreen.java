@@ -25,7 +25,7 @@ public class HomeScreen extends UIScreen {
     this.ss = ss;
     testScreen = new TestScreen(ss);
 
-    bgImage = assets().getImage("images/homeBackground2.png");
+    bgImage = assets().getImage("images/homeBackground3.png");
     bgLayer = graphics().createImageLayer(bgImage);
     //graphics().rootLayer().add(bgLayer);
 
