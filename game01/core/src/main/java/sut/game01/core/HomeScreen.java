@@ -19,6 +19,13 @@ public class HomeScreen extends UIScreen {
   private Image startButton;
   private ImageLayer startLayer;
 
+  private Image optionButton;
+  private ImageLayer optionLayer;
+
+  private Image creditButton;
+  private ImageLayer creditLayer;
+
+
   
 
   public HomeScreen(final ScreenStack ss){
@@ -29,10 +36,20 @@ public class HomeScreen extends UIScreen {
     bgLayer = graphics().createImageLayer(bgImage);
     //graphics().rootLayer().add(bgLayer);
 
-    startButton = assets().getImage("images/startButton.png");
+    startButton = assets().getImage("images/playGameButton.png");
     startLayer = graphics().createImageLayer(startButton);
     //graphics().rootLayer().add(startLayer);
-    startLayer.setTranslation(220,140);
+    startLayer.setTranslation(245,140);
+
+    optionButton = assets().getImage("images/optionButton.png");
+    optionLayer = graphics().createImageLayer(optionButton);
+    //graphics().rootLayer().add(startLayer);
+    optionLayer.setTranslation(245,220);
+
+    creditButton = assets().getImage("images/creditButton.png");
+    creditLayer = graphics().createImageLayer(creditButton);
+    //graphics().rootLayer().add(startLayer);
+    creditLayer.setTranslation(245,300);
 
 
       startLayer.addListener(new Mouse.LayerAdapter(){
@@ -50,7 +67,7 @@ public class HomeScreen extends UIScreen {
 
       this.layer.add(bgLayer);
       this.layer.add(startLayer);
-
-      
+      this.layer.add(optionLayer);
+      this.layer.add(creditLayer);
   }
 }
