@@ -13,6 +13,7 @@ public class HomeScreen extends UIScreen {
 
   private final TestScreen testScreen;
   private final ScreenStack ss;
+  //private final GameScreen gameScreen;
   
   private Image bgImage;
   private ImageLayer bgLayer;
@@ -31,6 +32,7 @@ public class HomeScreen extends UIScreen {
   public HomeScreen(final ScreenStack ss){
     this.ss = ss;
     testScreen = new TestScreen(ss);
+    //gameScreen = new GameScreen(ss);
 
     bgImage = assets().getImage("images/homeBackground3.png");
     bgLayer = graphics().createImageLayer(bgImage);
@@ -58,8 +60,9 @@ public class HomeScreen extends UIScreen {
         ss.push(testScreen);
       }
     });
+
       
-  }
+}
 
   @Override
   public void wasShown() {
@@ -71,3 +74,4 @@ public class HomeScreen extends UIScreen {
       this.layer.add(creditLayer);
   }
 }
+
