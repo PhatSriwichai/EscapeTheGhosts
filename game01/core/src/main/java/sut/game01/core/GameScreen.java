@@ -1,26 +1,22 @@
 package sut.game01.core;
 
-
 import static playn.core.PlayN.*;
 
 import playn.core.*;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import tripleplay.game.*;
-import sut.game01.core.character.Zealot;
 
-public class TestScreen extends Screen {
+public class GameScreen extends UIScreen {
   private final ScreenStack ss;
   private Image bgImage;
   private ImageLayer bgLayer;
   private Image backButton;
   private ImageLayer backLayer;
-  private Zealot z;
 
  
 
-  public TestScreen(final ScreenStack ss){
-  	//===============================================================
+  public GameScreen(final ScreenStack ss){
     this.ss = ss;
 
     bgImage = assets().getImage("images/bg.png");
@@ -38,26 +34,17 @@ public class TestScreen extends Screen {
         ss.remove(ss.top());
       }
     });
-    //==============================================================
 
-
-  
+   
+      
   }
 
   @Override
   public void wasShown() {
       super.wasShown();
       this.layer.add(bgLayer);
-      this.layer.add(backLayer);
+       this.layer.add(backLayer);
 
-      z = new Zealot(560f, 400f);
-      this.layer.add(z.layer());
-  }
-
-  @Override
-  public void update(int delta){
-  		super.update(delta);
-  		z.update(delta);
   }
 
   

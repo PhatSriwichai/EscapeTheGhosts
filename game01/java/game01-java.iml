@@ -12,6 +12,8 @@
     <orderEntry type="module" module-name="game01-core" />
     <orderEntry type="library" name="Maven: com.googlecode.playn:playn-core:1.9" level="project" />
     <orderEntry type="library" name="Maven: com.samskivert:pythagoras:1.4.2" level="project" />
+    <orderEntry type="library" name="Maven: com.threerings:tripleplay:1.9" level="project" />
+    <orderEntry type="library" name="Maven: com.threerings:react:1.4.1" level="project" />
     <orderEntry type="module" module-name="game01-assets" />
     <orderEntry type="library" name="Maven: com.googlecode.playn:playn-java:1.9" level="project" />
     <orderEntry type="library" name="Maven: org.lwjgl.lwjgl:lwjgl:2.9.0" level="project" />
