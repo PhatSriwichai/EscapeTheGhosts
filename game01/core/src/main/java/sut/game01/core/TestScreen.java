@@ -7,7 +7,7 @@ import playn.core.*;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import tripleplay.game.*;
-import sut.game01.core.character.Zealot;
+import sut.game01.core.character.*;
 
 public class TestScreen extends Screen {
   private final ScreenStack ss;
@@ -15,7 +15,7 @@ public class TestScreen extends Screen {
   private ImageLayer bgLayer;
   private Image backButton;
   private ImageLayer backLayer;
-  private Zealot z;
+  private Player z;
 
  
 
@@ -50,7 +50,7 @@ public class TestScreen extends Screen {
       this.layer.add(bgLayer);
       this.layer.add(backLayer);
 
-      z = new Zealot(560f, 400f);
+      z = new Player(560f, 400f);
       this.layer.add(z.layer());
   }
 
