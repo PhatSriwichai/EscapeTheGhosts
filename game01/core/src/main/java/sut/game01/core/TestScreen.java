@@ -15,7 +15,7 @@ public class TestScreen extends Screen {
   private ImageLayer bgLayer;
   private Image backButton;
   private ImageLayer backLayer;
-  private Player z;
+  private Hero hero;
 
  
 
@@ -40,6 +40,7 @@ public class TestScreen extends Screen {
     });
     //==============================================================
 
+     hero = new Hero(560f, 400f);
 
   
   }
@@ -50,14 +51,14 @@ public class TestScreen extends Screen {
       this.layer.add(bgLayer);
       this.layer.add(backLayer);
 
-      z = new Player(560f, 400f);
-      this.layer.add(z.layer());
+     
+      this.layer.add(hero.layer());
   }
 
   @Override
   public void update(int delta){
   		super.update(delta);
-  		z.update(delta);
+  		hero.update(delta);
   }
 
   
