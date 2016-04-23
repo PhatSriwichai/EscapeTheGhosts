@@ -1,17 +1,17 @@
 package sut.game01.core;
 
-import static playn.core.PlayN.*;
-
-import react.UnitSlot;
-
-import playn.core.*;
 import playn.core.Image;
 import playn.core.ImageLayer;
-import tripleplay.game.*;
+import playn.core.Mouse;
+import tripleplay.game.ScreenStack;
+import tripleplay.game.UIScreen;
+
+import static playn.core.PlayN.assets;
+import static playn.core.PlayN.graphics;
 
 public class HomeScreen extends UIScreen {
 
-  private final TestScreen testScreen;
+  private final GameScreen gameScreen;
   private final ScreenStack ss;
   //private final GameScreen gameScreen;
   
@@ -31,7 +31,7 @@ public class HomeScreen extends UIScreen {
 
   public HomeScreen(final ScreenStack ss){
     this.ss = ss;
-    testScreen = new TestScreen(ss);
+    gameScreen = new GameScreen(ss);
     //gameScreen = new GameScreen(ss);
 
     bgImage = assets().getImage("images/homeBackground3.png");
@@ -57,7 +57,7 @@ public class HomeScreen extends UIScreen {
       startLayer.addListener(new Mouse.LayerAdapter(){
       @Override
       public void onMouseUp(Mouse.ButtonEvent event){
-        ss.push(testScreen);
+        ss.push(gameScreen);
       }
     });
 

@@ -1,51 +1,52 @@
 package sut.game01.core;
 
-import static playn.core.PlayN.*;
-
 import playn.core.*;
-import playn.core.Image;
-import playn.core.ImageLayer;
-import tripleplay.game.*;
+import tripleplay.game.ScreenStack;
+import tripleplay.game.UIScreen;
+import sut.game01.core.character.*;
+
+import static playn.core.PlayN.assets;
+import static playn.core.PlayN.graphics;
 
 public class GameScreen extends UIScreen {
-  private final ScreenStack ss;
-  private Image bgImage;
-  private ImageLayer bgLayer;
-  private Image backButton;
-  private ImageLayer backLayer;
+    private final ScreenStack ss;
+    private Image bgImage;
+    private ImageLayer bgLayer;
+    private Hero hero;
+
 
  
 
-  public GameScreen(final ScreenStack ss){
-    this.ss = ss;
+    public GameScreen(final ScreenStack ss){
+        this.ss = ss;
+        hero = new Hero(300,330);
 
-    bgImage = assets().getImage("images/bg.png");
-    bgLayer = graphics().createImageLayer(bgImage);
-    //graphics().rootLayer().add(bgLayer);
+        bgImage = assets().getImage("images/background/bg1.png");
+        bgLayer = graphics().createImageLayer(bgImage);
+        //graphics().rootLayer().add(bgLayer);
 
-    backButton = assets().getImage("images/backButton.png");
-    backLayer = graphics().createImageLayer(backButton);
-    //graphics().rootLayer().add(backLayer);
-    backLayer.setTranslation(10,10);
-
-    backLayer.addListener(new Mouse.LayerAdapter(){
-      @Override
-      public void onMouseUp(Mouse.ButtonEvent event){
-        ss.remove(ss.top());
-      }
-    });
-
-   
+        PlayN.keyboard().setListener(new Keyboard.Adapter(){
+            @Override
+            public void onKeyUp(Keyboard.Event event) {
+                if(event.key() == Key.ESCAPE){
+                    ss.remove(ss.top());
+                }
+            }
+        });
       
-  }
+    }
 
-  @Override
-  public void wasShown() {
-      super.wasShown();
-      this.layer.add(bgLayer);
-       this.layer.add(backLayer);
+    @Override
+    public void wasShown() {
+        super.wasShown();
+        this.layer.add(bgLayer);
+        this.layer.add(hero.layer());
 
-  }
+    }
 
-  
+    @Override
+    public void update(int delta) {
+        super.update(delta);
+        hero.update(delta);
+    }
 }

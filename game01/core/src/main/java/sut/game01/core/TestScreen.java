@@ -1,13 +1,15 @@
 package sut.game01.core;
 
 
-import static playn.core.PlayN.*;
-
-import playn.core.*;
 import playn.core.Image;
 import playn.core.ImageLayer;
-import tripleplay.game.*;
-import sut.game01.core.character.*;
+import playn.core.Mouse;
+import sut.game01.core.character.Hero;
+import tripleplay.game.Screen;
+import tripleplay.game.ScreenStack;
+
+import static playn.core.PlayN.assets;
+import static playn.core.PlayN.graphics;
 
 public class TestScreen extends Screen {
   private final ScreenStack ss;
@@ -55,7 +57,7 @@ public class TestScreen extends Screen {
       this.layer.add(hero.layer());
   }
 
-  @Override
+    @Override
   public void update(int delta){
   		super.update(delta);
   		hero.update(delta);
