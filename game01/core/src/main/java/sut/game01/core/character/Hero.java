@@ -1,11 +1,12 @@
 package sut.game01.core.character;
 
-import sut.game01.core.sprite.*;
-import playn.core.util.*;
-import playn.core.*;
-import sut.game01.core.*;
-import tripleplay.game.*;
+import playn.core.Key;
+import playn.core.Keyboard;
 import playn.core.Layer;
+import playn.core.PlayN;
+import playn.core.util.Callback;
+import sut.game01.core.sprite.Sprite;
+import sut.game01.core.sprite.SpriteLoader;
 
 public class Hero{
     private Sprite sprite;
@@ -15,10 +16,16 @@ public class Hero{
     private float y;
 
     public enum State{
-        IDLE, IDLE2, IDLE3, RUN, RUN2, RUN3, ATTK, ATTK2, ATTK3
+        IDLE, IDLE2, IDLE3, RUN, RUN2, RUN3, ATTK, ATTK2, ATTK3,
+        RIDLE, RIDLE2, RIDLE3, RRUN, RRUN2, RRUN3, RATTK, RATTK2, RATTK3
+    };
+
+    public enum Direction{
+        LEFT, RIGHT
     };
 
     private State state = State.IDLE;
+    private Direction direction = Direction.RIGHT;
 
     private int e = 0;
     private int offset = 0;
@@ -60,16 +67,35 @@ public class Hero{
         PlayN.keyboard().setListener(new Keyboard.Adapter(){
             @Override
             public void onKeyDown(Keyboard.Event event){
+                if(event.key() == Key.A){
+                   direction = Direction.LEFT;
+                    switch(state){
+                        case RIDLE: state = State.IDLE; break;
+                        case RRUN: state = State.RUN; break;
+                        case RATTK: state = State.ATTK; break;
+                    }
+                }
+                if(event.key() == Key.D){
+                    direction = Direction.RIGHT;
+                    switch(state){
+                        case IDLE: state = State.RIDLE; break;
+                        case RUN: state = State.RRUN; break;
+                        case ATTK: state = State.RATTK; break;
+                    }
+                }
                 if(event.key() == Key.SPACE){
+                    spriteIndex = 0;
                     switch(state){
                         case IDLE: state = State.RUN; break;
                         case RUN: state = State.ATTK; break;
                         case ATTK: state = State.IDLE; break;
+                        case RIDLE: state = State.RRUN; break;
+                        case RRUN: state = State.RATTK; break;
+                        case RATTK: state = State.RIDLE; break;
                     }
+
                 }
-                if(event.key() == Key.A){
-                    x -= 2/2+20;
-                }
+
                 
             }
         });
@@ -90,10 +116,32 @@ public class Hero{
                 case RUN3: offset = 20;
                             break;
                 case ATTK: offset = 24;
+                            if(spriteIndex == 26)
+                                state = State.IDLE;
                             break;
-                case ATTK2: offset = 26;
+                case ATTK2: offset = 28;
                             break;
-                case ATTK3: offset = 28;
+                case ATTK3: offset = 32;
+                            break;
+                case RIDLE: offset = 36;
+                            break;
+                case RIDLE2: offset = 40;
+                            break;
+                case RIDLE3: offset = 44;
+                            break;
+                case RRUN: offset = 48;
+                            break;
+                case RRUN2: offset = 52;
+                            break;
+                case RRUN3: offset = 56;
+                            break;
+                case RATTK: offset = 60;
+                            if(spriteIndex == 62)
+                                state = State.RIDLE;
+                            break;
+                case RATTK2: offset = 64;
+                            break;
+                case RATTK3: offset = 68;
 
             }
             spriteIndex = offset + ((spriteIndex + 1)%4);
