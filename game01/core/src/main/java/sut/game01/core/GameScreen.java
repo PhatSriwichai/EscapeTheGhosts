@@ -19,7 +19,7 @@ public class GameScreen extends UIScreen {
 
     public GameScreen(final ScreenStack ss){
         this.ss = ss;
-        hero = new Hero(300,330);
+        //hero = new Hero(300,330);
 
         bgImage = assets().getImage("images/background/bg1.png");
         bgLayer = graphics().createImageLayer(bgImage);
@@ -40,13 +40,13 @@ public class GameScreen extends UIScreen {
     public void wasShown() {
         super.wasShown();
         this.layer.add(bgLayer);
-        this.layer.add(hero.layer());
+        //this.layer.add(hero.layer());
 
     }
 
     @Override
     public void update(int delta) {
         super.update(delta);
-        hero.update(delta);
+        //hero.update(delta);
     }
 }
