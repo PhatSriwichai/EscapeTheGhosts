@@ -1,22 +1,29 @@
 package sut.game01.core;
 
 
+import org.jbox2d.callbacks.ContactImpulse;
+import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.callbacks.DebugDraw;
+import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.shapes.EdgeShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.contacts.Contact;
 import playn.core.*;
 import playn.core.util.Clock;
+import sut.game01.core.character.Bomb;
 import sut.game01.core.character.Hero;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import static playn.core.PlayN.*;
+import static playn.core.PlayN.assets;
+import static playn.core.PlayN.graphics;
 
 public class TestScreen extends Screen {
   private final ScreenStack ss;
@@ -33,9 +40,14 @@ public class TestScreen extends Screen {
     private DebugDrawBox2D debugDraw;
 
     private World world;
-    //private Map<String, Hero> heroMap;
+    private HashMap<Object, String> bodies;
     private List<Hero> heroMap;
+    private List<Bomb> bombList;
+
     private int i = 0;
+    private int core = 0;
+    private Bomb bomb;
+
 
  
 
@@ -47,8 +59,9 @@ public class TestScreen extends Screen {
       world.setWarmStarting(true);
       world.setAutoClearForces(true);
 
-      //heroMap = new HashMap<String, Hero>();
+      bodies = new HashMap<Object, String>();
       heroMap = new ArrayList<Hero>();
+      bombList = new ArrayList<Bomb>();
 
 
     bgImage = assets().getImage("images/bg.png");
@@ -68,15 +81,19 @@ public class TestScreen extends Screen {
     });
     //==============================================================
 
-     hero = new Hero(world,320f, 200f);
+      hero = new Hero(world,150f,150f);
+      bodies.put(hero.getBody(), "hero_1");
+      bombList.add(new Bomb(world, 200f, 300f));
+      bombList.add(new Bomb(world, 300f, 300f));
+      bombList.add(new Bomb(world, 400f, 300f));
 
-  
+
   }
 
   @Override
   public void wasShown() {
       super.wasShown();
-      this.layer.add(bgLayer);
+      //this.layer.add(bgLayer);
       this.layer.add(backLayer);
 
       Body ground = world.createBody(new BodyDef());
@@ -100,21 +117,55 @@ public class TestScreen extends Screen {
           debugDraw.setCamera(0, 0, 1f / M_PER_PIXEL);
           world.setDebugDraw(debugDraw);
       }
-      mouse().setListener(new Mouse.Adapter(){
+
+      world.setContactListener(new ContactListener() {
           @Override
-          public void onMouseUp(Mouse.ButtonEvent event) {
-              Hero he = new Hero(world, (float)event.x(), (float)event.y());
-              //Hero he = new Hero(world, 100f, 100f);
-              //heroMap.put("hero_" + i++, he);
-              heroMap.add(he);
+          public void beginContact(Contact contact) {
+              Body a = contact.getFixtureA().getBody();
+              Body b = contact.getFixtureB().getBody();
+
+              //if(bodies.get(a) != null){
+              //a.applyForce(new Vec2(200.0f, 0f), b.getPosition());
+              //   b.applyLinearImpulse(new Vec2(200.0f,0f), b.getPosition());
+              //
+              //}
+              if(contact.getFixtureA().getBody()==hero.getBody()||
+                      contact.getFixtureB().getBody() == hero.getBody()){
+                  hero.contact(contact);
+              }
+              for(Bomb bomb: bombList){
+                  if(contact.getFixtureA().getBody()==bomb.getBody()||
+                          contact.getFixtureB().getBody() == bomb.getBody()){
+                      bomb.contact(contact);
+                      core++;
+                      bomb.layer().setVisible(false);
+                  }
+              }
+
+          }
+
+          @Override
+          public void endContact(Contact contact) {
+
+          }
+
+          @Override
+          public void preSolve(Contact contact, Manifold manifold) {
+
+          }
+
+          @Override
+          public void postSolve(Contact contact, ContactImpulse contactImpulse) {
+
           }
       });
-      this.layer.add(hero.layer());
 
-      for(Hero h: heroMap){
-          System.out.println("add");
-          this.layer.add(h.layer());
+
+      this.layer.add(hero.layer());
+      for(Bomb b: bombList){
+         this.layer.add(b.layer());
       }
+
 
   }
 
@@ -122,11 +173,10 @@ public class TestScreen extends Screen {
   public void update(int delta){
   		super.update(delta);
   		hero.update(delta);
-        for(Hero h: heroMap){
-            //System.out.println("update");
-            this.layer.add(h.layer());
-            h.update(delta);
+        for(Bomb b: bombList){
+            b.update(delta);
         }
+
         world.step(0.033f, 10, 10);
   }
 
@@ -134,13 +184,24 @@ public class TestScreen extends Screen {
     public void paint(Clock clock) {
         super.paint(clock);
         hero.paint(clock);
-        for(Hero h: heroMap){
-            //System.out.println("paint");
-            h.paint(clock);
+        //bomb.paint(clock);
+        //bomb2.paint(clock);
+       // bomb3.paint(clock);
+        for(Bomb b: bombList){
+            b.paint(clock);
         }
+        //for(Hero h: heroMap){
+            //System.out.println("paint");
+           // h.paint(clock);
+        //}
         if(showDebugDraw){
             debugDraw.getCanvas().clear();
             world.drawDebugData();
+
+            debugDraw.getCanvas().setFillColor(Color.rgb(255,255,255));
+            debugDraw.getCanvas().drawText(String.valueOf(core),100,100);
         }
+
+
     }
 }

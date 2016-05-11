@@ -3,6 +3,7 @@ package sut.game01.core.character;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
+import org.jbox2d.dynamics.contacts.Contact;
 import playn.core.Key;
 import playn.core.Keyboard;
 import playn.core.Layer;
@@ -20,6 +21,9 @@ public class Hero{
     private float x;
     private float y;
     private Body body;
+    private boolean contacted;
+    private int contactCheck;
+    private Body other;
 
     public enum State{
         IDLE, IDLE2, IDLE3, RUN, RUN2, RUN3, ATTK, ATTK2, ATTK3,
@@ -39,6 +43,7 @@ public class Hero{
     private int offset = 0;
 
     public Hero(final World world, final float x_px, final float y_px){
+    //public Hero(final World world){
         this.x = x_px;
         this.y = y_px;
           
@@ -52,6 +57,7 @@ public class Hero{
                 sprite.layer().setTranslation(x, y + 13f);
                 body = initPhysicsBody(world, TestScreen.M_PER_PIXEL * x_px,
                                        TestScreen.M_PER_PIXEL * y_px);
+
                 hasLoaded = true;
 
 
@@ -64,7 +70,6 @@ public class Hero{
 
         });
 
-      
 
     }
     public Layer layer(){
@@ -78,52 +83,19 @@ public class Hero{
             @Override
             public void onKeyDown(Keyboard.Event event) {
                 if(event.key() == Key.A) {
-                    direction = Direction.LEFT;
-                    switch (state) {
-                        case RIDLE: state = State.IDLE;     break;
-                        case RIDLE2:state = State.IDLE2;    break;
-                        case RRUN:  state = State.RUN;      break;
-                        case RRUN2: state = State.RUN2;     break;
-                        case RATTK: state = State.ATTK;     break;
-                    }
-                    //while(event.key() == Key.A)
-                        x -= 10.0f;
+                    //direction = Direction.LEFT;
+                    state = State.RUN;
+                    body.applyLinearImpulse(new Vec2(-5.0f,0), body.getPosition());
                 }
                 if (event.key() == Key.D) {
                     direction = Direction.RIGHT;
-                    switch (state) {
-                        case IDLE:  state = State.RIDLE;    break;
-                        case IDLE2: state = State.RIDLE2;   break;
-                        case RUN:   state = State.RRUN;     break;
-                        case RUN2:  state = State.RRUN2;    break;
-                        case ATTK:  state = State.RATTK;    break;
-                    }
-                    x += 10.0f;
+                    state = State.RRUN;
+                    body.applyLinearImpulse(new Vec2(5.0f,0), body.getPosition());
                 }
-                if (event.key() == Key.SPACE) {
-                    spriteIndex = 0;
-                    switch (state) {
-                        case IDLE:
-                            state = State.RUN;
-                            break;
-                        case RUN:
-                            state = State.ATTK;
-                            break;
-                        case ATTK:
-                            state = State.IDLE;
-                            break;
-                        case RIDLE:
-                            state = State.RRUN;
-                            break;
-                        case RRUN:
-                            state = State.RATTK;
-                            break;
-                        case RATTK:
-                            state = State.RIDLE;
-                            break;
-                    }
+                if(event.key() == Key.SPACE){
+                    jump();
+                }
 
-                }
             }
         });
 
@@ -140,8 +112,12 @@ public class Hero{
                 case IDLE3: offset = 8;
                            break;
                 case RUN: offset = 12;
+                            if(spriteIndex == 15)
+                                state = State.IDLE;
                             break;
                 case RUN2: offset = 16;
+                            if(spriteIndex == 19)
+                                state = State.IDLE;
                             break;
                 case RUN3: offset = 20;
                             break;
@@ -160,8 +136,12 @@ public class Hero{
                 case RIDLE3: offset = 44;
                             break;
                 case RRUN: offset = 48;
+                            if(spriteIndex == 51)
+                                state = State.RIDLE;
                             break;
                 case RRUN2: offset = 52;
+                            if(spriteIndex == 55)
+                                state = State.RIDLE;
                             break;
                 case RRUN3: offset = 56;
                             break;
@@ -333,9 +313,45 @@ public class Hero{
     public void paint(Clock clock){
         if(!hasLoaded) return;
 
+        //sprite.layer().setRotation(body.getAngle());
+
         sprite.layer().setTranslation(
                 (body.getPosition().x / TestScreen.M_PER_PIXEL + 13),
                 body.getPosition().y / TestScreen.M_PER_PIXEL);
 
     }
+
+    public void setX(float x){
+        this.x = x;
+    }
+    public float getX(){
+        return this.x;
+    }
+    public void setY(float y){
+        this.y = y;
+    }
+    public float getY(){
+        return this.y;
+    }
+
+    public Body getBody(){
+        return this.body;
+    }
+    public void contact(Contact contact){
+        contacted = true;
+        contactCheck = 0;
+
+        if(state == State.ATTK || state == State.ATTK2){
+            state = State.IDLE;
+        }
+        if(contact.getFixtureA().getBody()==body){
+            other = contact.getFixtureB().getBody();
+        }else{
+            other = contact.getFixtureA().getBody();
+        }
+    }
+    public void jump(){
+        body.applyForce(new Vec2(-10f, -800f), body.getPosition());
+    }
+
 }
