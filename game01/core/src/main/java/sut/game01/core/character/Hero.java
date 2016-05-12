@@ -10,9 +10,13 @@ import playn.core.Layer;
 import playn.core.PlayN;
 import playn.core.util.Callback;
 import playn.core.util.Clock;
+import sut.game01.core.GameScreen;
 import sut.game01.core.TestScreen;
 import sut.game01.core.sprite.Sprite;
 import sut.game01.core.sprite.SpriteLoader;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Hero{
     private Sprite sprite;
@@ -24,6 +28,9 @@ public class Hero{
     private boolean contacted;
     private int contactCheck;
     private Body other;
+    private List<Bomb> bombList;
+    private World world;
+    public static GameScreen game = new GameScreen();
 
     public enum State{
         IDLE, IDLE2, IDLE3, RUN, RUN2, RUN3, ATTK, ATTK2, ATTK3,
@@ -46,6 +53,7 @@ public class Hero{
     //public Hero(final World world){
         this.x = x_px;
         this.y = y_px;
+        bombList = new ArrayList<Bomb>();
           
         sprite = SpriteLoader.getSprite("images/sprites/hero.json");
         sprite.addCallback(new Callback<Sprite>(){
@@ -85,15 +93,22 @@ public class Hero{
                 if(event.key() == Key.A) {
                     //direction = Direction.LEFT;
                     state = State.RUN;
-                    body.applyLinearImpulse(new Vec2(-5.0f,0), body.getPosition());
+                    body.applyLinearImpulse(new Vec2(-20.0f,0), body.getPosition());
                 }
                 if (event.key() == Key.D) {
                     direction = Direction.RIGHT;
                     state = State.RRUN;
-                    body.applyLinearImpulse(new Vec2(5.0f,0), body.getPosition());
+                    body.applyLinearImpulse(new Vec2(20.0f,0), body.getPosition());
                 }
                 if(event.key() == Key.SPACE){
                     jump();
+                    game.addBomb(body.getPosition().x, body.getPosition().y);
+
+                    //bombList.add(new Bomb(world, body.getPosition().x, body.getPosition().y));
+                    //for(Bomb b: bombList){
+                        //game.addBomb(b);
+                    //}
+
                 }
 
             }
@@ -179,7 +194,7 @@ public class Hero{
         body.createFixture(fixtureDef);
 
         //body.createFixture(fixtureDef);
-
+        body.setFixedRotation(true);
         body.setLinearDamping(0.2f);
         body.setTransform(new Vec2(x, y), 0f);
 
@@ -337,6 +352,7 @@ public class Hero{
     public Body getBody(){
         return this.body;
     }
+
     public void contact(Contact contact){
         contacted = true;
         contactCheck = 0;
@@ -351,7 +367,9 @@ public class Hero{
         }
     }
     public void jump(){
-        body.applyForce(new Vec2(-10f, -800f), body.getPosition());
+        body.applyForce(new Vec2(-10f, -6000f), body.getPosition());
     }
+
+
 
 }

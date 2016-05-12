@@ -57,7 +57,7 @@ public class HomeScreen extends UIScreen {
       startLayer.addListener(new Mouse.LayerAdapter(){
       @Override
       public void onMouseUp(Mouse.ButtonEvent event){
-        ss.push(test);
+        ss.push(gameScreen);
       }
     });
 
