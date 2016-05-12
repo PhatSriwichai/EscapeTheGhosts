@@ -47,6 +47,7 @@ public class Bomb {
                         TestScreen.M_PER_PIXEL * y_px);
 
                 hasLoaded = true;
+
             }
 
             @Override
@@ -55,6 +56,7 @@ public class Bomb {
             }
 
         });
+
     }
 
     public Layer layer(){
@@ -68,6 +70,12 @@ public class Bomb {
                 case IDLE: offset = 0;
                     break;
                 case BOOM: offset = 6;
+                        if(spriteIndex == 11){
+                            state = State.IDLE;
+                            //sprite.layer().setVisible(false);
+                            //body.setActive(false);
+                        }
+
                     break;
             }
             spriteIndex = offset + ((spriteIndex + 1) % 6);
@@ -80,7 +88,7 @@ public class Bomb {
 
     private Body initPhysicsBody(World world, float x, float y){
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyType.STATIC;
+        bodyDef.type = BodyType.DYNAMIC;
         bodyDef.position = new Vec2(x, y);
         Body body = world.createBody(bodyDef);
 
@@ -89,15 +97,15 @@ public class Bomb {
                 50*TestScreen.M_PER_PIXEL / 2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        //fixtureDef.density = 0.4f;
-        //fixtureDef.friction = 0.1f;
-        //fixtureDef.restitution = 0.35f;
+        fixtureDef.density = 0.4f;
+        fixtureDef.friction = 0.1f;
+        fixtureDef.restitution = 0.35f;
         body.createFixture(fixtureDef);
 
         //body.createFixture(fixtureDef);
 
         body.setLinearDamping(0.2f);
-        //body.setTransform(new Vec2(x, y), 0f);
+        body.setTransform(new Vec2(x, y), 0f);
 
         return body;
     }
@@ -121,14 +129,18 @@ public class Bomb {
         contactCheck = 0;
 
         if(state == State.IDLE){
-            state = State.BOOM;
-            body.setActive(false);
+            //state = State.BOOM;
+            //body.setActive(false);
         }
         if(contact.getFixtureA().getBody()==body){
             other = contact.getFixtureB().getBody();
         }else{
             other = contact.getFixtureA().getBody();
         }
+    }
+
+    public void force(){
+        body.applyForce(new Vec2(10f,0f), body.getPosition());
     }
 
 }

@@ -54,7 +54,7 @@ public class TestScreen extends Screen {
   public TestScreen(final ScreenStack ss){
   	//===============================================================
     this.ss = ss;
-      Vec2 gravity = new Vec2(0.0f,10.0f);
+      Vec2 gravity = new Vec2(0.0f,100.0f);
       world = new World(gravity);
       world.setWarmStarting(true);
       world.setAutoClearForces(true);
@@ -124,12 +124,7 @@ public class TestScreen extends Screen {
               Body a = contact.getFixtureA().getBody();
               Body b = contact.getFixtureB().getBody();
 
-              //if(bodies.get(a) != null){
-              //a.applyForce(new Vec2(200.0f, 0f), b.getPosition());
-              //   b.applyLinearImpulse(new Vec2(200.0f,0f), b.getPosition());
-              //
-              //}
-              if(contact.getFixtureA().getBody()==hero.getBody()||
+              if(contact.getFixtureA().getBody() == hero.getBody()||
                       contact.getFixtureB().getBody() == hero.getBody()){
                   hero.contact(contact);
               }
@@ -138,7 +133,7 @@ public class TestScreen extends Screen {
                           contact.getFixtureB().getBody() == bomb.getBody()){
                       bomb.contact(contact);
                       core++;
-                      bomb.layer().setVisible(false);
+                      //bomb.layer().setVisible(false);
                   }
               }
 
@@ -170,7 +165,7 @@ public class TestScreen extends Screen {
   }
 
     @Override
-  public void update(int delta){
+    public void update(int delta){
   		super.update(delta);
   		hero.update(delta);
         for(Bomb b: bombList){
@@ -178,15 +173,13 @@ public class TestScreen extends Screen {
         }
 
         world.step(0.033f, 10, 10);
-  }
+    }
 
     @Override
     public void paint(Clock clock) {
         super.paint(clock);
         hero.paint(clock);
-        //bomb.paint(clock);
-        //bomb2.paint(clock);
-       // bomb3.paint(clock);
+
         for(Bomb b: bombList){
             b.paint(clock);
         }
@@ -199,7 +192,7 @@ public class TestScreen extends Screen {
             world.drawDebugData();
 
             debugDraw.getCanvas().setFillColor(Color.rgb(255,255,255));
-            debugDraw.getCanvas().drawText(String.valueOf(core),100,100);
+            debugDraw.getCanvas().drawText("Score = "+String.valueOf(core),100,100);
         }
 
 
