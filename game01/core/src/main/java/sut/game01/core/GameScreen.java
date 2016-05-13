@@ -11,7 +11,6 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.Contact;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 import playn.core.*;
 import playn.core.util.Clock;
 import sut.game01.core.character.Bomb;
@@ -23,9 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static playn.core.PlayN.assets;
-import static playn.core.PlayN.graphics;
-import static playn.core.PlayN.keyboard;
+import static playn.core.PlayN.*;
 
 public class GameScreen extends Screen {
     //private final ScreenStack ss;
@@ -122,13 +119,6 @@ public class GameScreen extends Screen {
             world.setDebugDraw(debugDraw);
         }
 
-        keyboard().setListener(new Keyboard.Adapter(){
-            @Override
-            public void onKeyDown(Keyboard.Event event) {
-                bombList.add(new Bomb(world, hero.getBody().getPosition().x/M_PER_PIXEL, hero.getBody().getPosition().y/M_PER_PIXEL));
-            }
-        });
-
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
@@ -137,12 +127,12 @@ public class GameScreen extends Screen {
 
                 if(contact.getFixtureA().getBody() == hero.getBody()||
                         contact.getFixtureB().getBody() == hero.getBody()){
-                    hero.contact(contact);
+                    //hero.contact(contact);
                 }
                 for(Bomb bomb: bombList){
                     if(contact.getFixtureA().getBody()==bomb.getBody()||
-                            contact.getFixtureB().getBody() == bomb.getBody()){
-                        bomb.contact(contact);
+                            contact.getFixtureB().getBody() == bomb.getBody() ){
+                        //bomb.contact(contact, hero);
                         core++;
                         //bomb.layer().setVisible(false);
                     }
@@ -182,6 +172,9 @@ public class GameScreen extends Screen {
         for(Bomb b: bombList){
             b.update(delta);
         }
+        for(Bomb b: bombList){
+            this.layer.add(b.layer());
+        }
 
         world.step(0.033f, 10, 10);
     }
@@ -208,14 +201,7 @@ public class GameScreen extends Screen {
 
 
     }
-    public static void addBomb(final float x, final float y){
-        Bomb b = new Bomb(world, x/M_PER_PIXEL, y/M_PER_PIXEL);
+    public void addBomb(Bomb b){
         bombList.add(b);
-        b.force();
-        //System.out.println(x/M_PER_PIXEL);
-        //this.layer.add(b.layer());
-        //b.getBody().applyForce(new Vec2(10f,0f), new Vec2(x,y));
-
-
     }
 }

@@ -30,9 +30,10 @@ public class Hero{
     private Body other;
     private List<Bomb> bombList;
     private World world;
-    public static GameScreen game = new GameScreen();
+    public GameScreen game = new GameScreen();
+    private Clock clock;
 
-    public enum State{
+    public static enum State{
         IDLE, IDLE2, IDLE3, RUN, RUN2, RUN3, ATTK, ATTK2, ATTK3,
         RIDLE, RIDLE2, RIDLE3, RRUN, RRUN2, RRUN3, RATTK, RATTK2, RATTK3
     };
@@ -51,6 +52,7 @@ public class Hero{
 
     public Hero(final World world, final float x_px, final float y_px){
     //public Hero(final World world){
+        this.world = world;
         this.x = x_px;
         this.y = y_px;
         bombList = new ArrayList<Bomb>();
@@ -92,17 +94,65 @@ public class Hero{
             public void onKeyDown(Keyboard.Event event) {
                 if(event.key() == Key.A) {
                     //direction = Direction.LEFT;
-                    state = State.RUN;
+                    if(state == State.RIDLE || state == State.RIDLE2)
+                        state = State.IDLE;
+                    else
+                        state = State.RUN;
                     body.applyLinearImpulse(new Vec2(-20.0f,0), body.getPosition());
+                    sprite.layer().setTranslation(body.getPosition().x / TestScreen.M_PER_PIXEL -10,
+                            body.getPosition().y / TestScreen.M_PER_PIXEL);
                 }
                 if (event.key() == Key.D) {
-                    direction = Direction.RIGHT;
-                    state = State.RRUN;
+                    //direction = Direction.RIGHT;
+                    if(state == State.IDLE || state == State.IDLE2)
+                        state = State.RIDLE;
+                    else
+                        state = State.RRUN;
                     body.applyLinearImpulse(new Vec2(20.0f,0), body.getPosition());
                 }
                 if(event.key() == Key.SPACE){
-                    jump();
-                    game.addBomb(body.getPosition().x, body.getPosition().y);
+                    //jump();
+                    //body.setActive(false);
+                    Bomb b;
+                    switch(state){
+                        case IDLE: state = State.ATTK;
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
+                            game.addBomb(b);
+                            break;
+                        case IDLE2: state = State.ATTK;
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
+                            game.addBomb(b);
+                            break;
+                        case RUN: state = State.ATTK;
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
+                            game.addBomb(b);
+                            break;
+                        case RUN2: state = State.ATTK;
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
+                            game.addBomb(b);
+                            break;
+                        case RIDLE: state = State.RATTK;
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
+                            game.addBomb(b);
+                            break;
+                        case RIDLE2: state = State.RATTK;
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
+                            game.addBomb(b);
+                            break;
+                        case RRUN: state = State.RATTK;
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
+                            game.addBomb(b);
+                            break;
+                        case RRUN2: state = State.RATTK;
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
+                            game.addBomb(b);
+                            break;
+                    }
+
+                    //b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +15,body.getPosition().y/GameScreen.M_PER_PIXEL);
+                    //game.addBomb(b);
+
+                    //body.setActive(true);
 
                     //bombList.add(new Bomb(world, body.getPosition().x, body.getPosition().y));
                     //for(Bomb b: bombList){
@@ -112,13 +162,14 @@ public class Hero{
                 }
 
             }
+
         });
 
         d1 += delta;
         checkEyes();
 
         e += delta;
-        if(e > 150){
+        if(e > 120){
             switch(state){
                 case IDLE: offset = 0;
                            break;
@@ -169,9 +220,10 @@ public class Hero{
                 case RATTK3: offset = 68;
 
             }
+
             spriteIndex = offset + ((spriteIndex + 1)%4);
             sprite.setSprite(spriteIndex);
-            sprite.layer().setTranslation(body.getPosition().x / TestScreen.M_PER_PIXEL + 13,
+            sprite.layer().setTranslation(body.getPosition().x / TestScreen.M_PER_PIXEL,
                     body.getPosition().y / TestScreen.M_PER_PIXEL);
             e=0;
         }
@@ -326,6 +378,7 @@ public class Hero{
     }
 
     public void paint(Clock clock){
+        this.clock = clock;
         if(!hasLoaded) return;
 
         //sprite.layer().setRotation(body.getAngle());
@@ -358,7 +411,7 @@ public class Hero{
         contactCheck = 0;
 
         if(state == State.ATTK || state == State.ATTK2){
-            state = State.IDLE;
+            //state = State.IDLE;
         }
         if(contact.getFixtureA().getBody()==body){
             other = contact.getFixtureB().getBody();
