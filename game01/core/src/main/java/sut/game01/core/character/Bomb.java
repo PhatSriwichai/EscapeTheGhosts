@@ -22,6 +22,8 @@ public class Bomb {
     private boolean contacted;
     private int contactCheck;
     private Body other;
+    private char direction;
+    private int checkBoom = 0;
 
 
     public enum State{
@@ -31,9 +33,10 @@ public class Bomb {
     private int offset = 0;
     private int e = 0;
 
-    public Bomb(final World world, final float x_px, final float y_px){
+    public Bomb(final World world, final float x_px, final float y_px, final char direction){
         this.x = x_px;
         this.y = y_px;
+        this.direction = direction;
 
         sprite = SpriteLoader.getSprite("images/sprites/bomb.json");
         sprite.addCallback(new Callback<Sprite>(){
@@ -62,20 +65,25 @@ public class Bomb {
     public Layer layer(){
         return sprite.layer();
     }
+
     public void update(int delta) {
         if (hasLoaded == false) return;
+        checkBoom += delta;
         e += delta;
         if (e > 150) {
             switch (state) {
                 case IDLE: offset = 0;
+                    if(checkBoom >= 450){
+                        state = State.BOOM;
+                        checkBoom = 0;
+                    }
                     break;
                 case BOOM: offset = 6;
-                        if(spriteIndex == 11){
-                            state = State.IDLE;
-                            //sprite.layer().setVisible(false);
-                            //body.setActive(false);
-                        }
-
+                    if(spriteIndex == 11){
+                        state = State.IDLE;
+                        sprite.layer().setVisible(false);
+                        body.setActive(false);
+                    }
                     break;
             }
             spriteIndex = offset + ((spriteIndex + 1) % 6);
@@ -97,8 +105,8 @@ public class Bomb {
                 50*TestScreen.M_PER_PIXEL / 2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 0.4f;
-        fixtureDef.friction = 0.1f;
+        fixtureDef.density = 0.1f;
+        fixtureDef.friction = 0.8f;
         fixtureDef.restitution = 0.35f;
         body.createFixture(fixtureDef);
 
@@ -106,7 +114,10 @@ public class Bomb {
 
         body.setLinearDamping(0.2f);
         body.setTransform(new Vec2(x, y), 0f);
-
+        if(direction == 'L')
+            body.applyForce(new Vec2(500f,0f), body.getPosition());
+        else if(direction == 'R')
+            body.applyForce(new Vec2(-500f,0f), body.getPosition());
         return body;
     }
 
@@ -124,14 +135,11 @@ public class Bomb {
     public Body getBody(){
         return this.body;
     }
-    public void contact(Contact contact){
+
+    public void contact(Contact contact, Hero hero){
         contacted = true;
         contactCheck = 0;
 
-        if(state == State.IDLE){
-            //state = State.BOOM;
-            //body.setActive(false);
-        }
         if(contact.getFixtureA().getBody()==body){
             other = contact.getFixtureB().getBody();
         }else{

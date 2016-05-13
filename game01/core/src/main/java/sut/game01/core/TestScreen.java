@@ -83,9 +83,9 @@ public class TestScreen extends Screen {
 
       hero = new Hero(world,150f,150f);
       bodies.put(hero.getBody(), "hero_1");
-      bombList.add(new Bomb(world, 200f, 300f));
-      bombList.add(new Bomb(world, 300f, 300f));
-      bombList.add(new Bomb(world, 400f, 300f));
+      //bombList.add(new Bomb(world, 200f, 300f));
+      //bombList.add(new Bomb(world, 300f, 300f));
+      //bombList.add(new Bomb(world, 400f, 300f));
 
 
   }
@@ -131,7 +131,7 @@ public class TestScreen extends Screen {
               for(Bomb bomb: bombList){
                   if(contact.getFixtureA().getBody()==bomb.getBody()||
                           contact.getFixtureB().getBody() == bomb.getBody()){
-                      bomb.contact(contact);
+                      //bomb.contact(contact);
                       core++;
                       //bomb.layer().setVisible(false);
                   }
