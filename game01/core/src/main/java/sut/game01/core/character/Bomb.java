@@ -24,6 +24,8 @@ public class Bomb {
     private Body other;
     private char direction;
     private int checkBoom = 0;
+    private boolean check = true;
+    private boolean checkActive = true;
 
 
     public enum State{
@@ -67,18 +69,32 @@ public class Bomb {
     }
 
     public void update(int delta) {
+
         if (hasLoaded == false) return;
+        if(state == State.IDLE){
+            //body.setActive(false);
+            //checkActive = false;
+        }
+
         checkBoom += delta;
         e += delta;
+
         if (e > 150) {
+
             switch (state) {
                 case IDLE: offset = 0;
+                    body.setActive(false);
                     if(checkBoom >= 450){
                         state = State.BOOM;
                         checkBoom = 0;
                     }
                     break;
                 case BOOM: offset = 6;
+                    if(check == true){
+                        body.setActive(true);
+                        check = false;
+                    }
+
                     if(spriteIndex == 11){
                         state = State.IDLE;
                         sprite.layer().setVisible(false);
@@ -118,6 +134,7 @@ public class Bomb {
             body.applyForce(new Vec2(500f,0f), body.getPosition());
         else if(direction == 'R')
             body.applyForce(new Vec2(-500f,0f), body.getPosition());
+
         return body;
     }
 
