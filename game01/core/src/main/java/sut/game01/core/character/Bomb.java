@@ -8,6 +8,7 @@ import org.jbox2d.dynamics.contacts.Contact;
 import playn.core.Layer;
 import playn.core.util.Callback;
 import playn.core.util.Clock;
+import sut.game01.core.GameScreen;
 import sut.game01.core.TestScreen;
 import sut.game01.core.sprite.Sprite;
 import sut.game01.core.sprite.SpriteLoader;
@@ -71,10 +72,6 @@ public class Bomb {
     public void update(int delta) {
 
         if (hasLoaded == false) return;
-        if(state == State.IDLE){
-            //body.setActive(false);
-            //checkActive = false;
-        }
 
         checkBoom += delta;
         e += delta;
@@ -84,7 +81,7 @@ public class Bomb {
             switch (state) {
                 case IDLE: offset = 0;
                     body.setActive(false);
-                    if(checkBoom >= 450){
+                    if(checkBoom >= 900){
                         state = State.BOOM;
                         checkBoom = 0;
                     }
@@ -94,18 +91,20 @@ public class Bomb {
                         body.setActive(true);
                         check = false;
                     }
+                    if(spriteIndex == 7)
+                        body.setActive(false);
 
                     if(spriteIndex == 11){
                         state = State.IDLE;
                         sprite.layer().setVisible(false);
-                        body.setActive(false);
+
                     }
                     break;
             }
             spriteIndex = offset + ((spriteIndex + 1) % 6);
             sprite.setSprite(spriteIndex);
-            sprite.layer().setTranslation(body.getPosition().x / TestScreen.M_PER_PIXEL,
-                    body.getPosition().y / TestScreen.M_PER_PIXEL);
+            sprite.layer().setTranslation(body.getPosition().x / GameScreen.M_PER_PIXEL,
+                    body.getPosition().y / GameScreen.M_PER_PIXEL);
             e = 0;
         }
     }
@@ -134,6 +133,7 @@ public class Bomb {
             body.applyForce(new Vec2(500f,0f), body.getPosition());
         else if(direction == 'R')
             body.applyForce(new Vec2(-500f,0f), body.getPosition());
+
 
         return body;
     }
@@ -166,6 +166,7 @@ public class Bomb {
 
     public void force(){
         body.applyForce(new Vec2(10f,0f), body.getPosition());
+
     }
 
 }
