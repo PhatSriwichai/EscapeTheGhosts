@@ -66,9 +66,13 @@ public class Ghost1 {
         if(e > 150){
             switch(state) {
                 case WALK: offset = 0; break;
-                case ATTK: offset = 4; break;
+                case ATTK: offset = 4;
+                            if(spriteIndex == 6){
+                                state = State.WALK;
+                            }
+                            break;
             }
-            body.applyForce(new Vec2(10.0f, 0.0f), body.getPosition());
+            //body.applyForce(new Vec2(10.0f, 0.0f), body.getPosition());
             spriteIndex = offset + ((spriteIndex + 1)%4);
             sprite.setSprite(spriteIndex);
             sprite.layer().setTranslation(body.getPosition().x / GameScreen.M_PER_PIXEL,
@@ -124,7 +128,9 @@ public class Ghost1 {
         contactCheck = 0;
         if(c == "Bomb"){
             body.applyLinearImpulse(new Vec2(100f, 50f), body.getPosition());
-
+        }
+        if(c == "Hero"){
+            state = State.ATTK;
         }
         if(contact.getFixtureA().getBody()==body){
             other = contact.getFixtureB().getBody();
