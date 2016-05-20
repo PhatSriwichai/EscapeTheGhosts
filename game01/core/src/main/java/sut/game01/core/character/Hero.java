@@ -116,35 +116,35 @@ public class Hero{
                     Bomb b;
                     switch(state){
                         case IDLE: state = State.ATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
                             game.addBomb(b);
                             break;
                         case IDLE2: state = State.ATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
                             game.addBomb(b);
                             break;
                         case RUN: state = State.ATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
                             game.addBomb(b);
                             break;
                         case RUN2: state = State.ATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
                             game.addBomb(b);
                             break;
                         case RIDLE: state = State.RATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
                             game.addBomb(b);
                             break;
                         case RIDLE2: state = State.RATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
                             game.addBomb(b);
                             break;
                         case RRUN: state = State.RATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
                             game.addBomb(b);
                             break;
                         case RRUN2: state = State.RATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +15,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
+                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
                             game.addBomb(b);
                             break;
                     }
@@ -243,6 +243,7 @@ public class Hero{
         fixtureDef.density = 0.4f;
         fixtureDef.friction = 0.1f;
         fixtureDef.restitution = 0.35f;
+        fixtureDef.filter.groupIndex = 1;
         body.createFixture(fixtureDef);
 
         //body.createFixture(fixtureDef);

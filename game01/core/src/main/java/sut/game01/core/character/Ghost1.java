@@ -26,6 +26,7 @@ public class Ghost1 {
     private int contactCheck;
     private Body other;
     private Clock clock;
+    private int groupIndex;
 
     public enum State{
         WALK, ATTK
@@ -34,7 +35,8 @@ public class Ghost1 {
     private int e = 0;
     private int offset = 0;
 
-    public Ghost1(final World world, final float x_px, final float y_px){
+    public Ghost1(final World world, final float x_px, final float y_px, final int groupIndex){
+        this.groupIndex = groupIndex;
         sprite = SpriteLoader.getSprite("images/sprites/ghost2.json");
         sprite.addCallback(new Callback<Sprite>(){
             @Override
@@ -109,6 +111,8 @@ public class Ghost1 {
         fixtureDef.density = 0.3f;
         fixtureDef.friction = 0.1f;
         fixtureDef.restitution = 0.35f;
+        fixtureDef.filter.groupIndex = groupIndex;
+
         body.createFixture(fixtureDef);
 
         //body.createFixture(fixtureDef);
