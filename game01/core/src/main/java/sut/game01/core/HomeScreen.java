@@ -3,15 +3,15 @@ package sut.game01.core;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Mouse;
+import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
-import tripleplay.game.UIScreen;
 
 import static playn.core.PlayN.assets;
 import static playn.core.PlayN.graphics;
 
-public class HomeScreen extends UIScreen {
+public class HomeScreen extends Screen {
 
-  private final GameScreen gameScreen;
+  private final LevelScreen levelScreen;
   private final ScreenStack ss;
   private final TestScreen test;
   
@@ -32,7 +32,7 @@ public class HomeScreen extends UIScreen {
   public HomeScreen(final ScreenStack ss){
     this.ss = ss;
     test = new TestScreen(ss);
-    gameScreen = new GameScreen(ss);
+    levelScreen = new LevelScreen(ss);
 
     bgImage = assets().getImage("images/homeBackground3.png");
     bgLayer = graphics().createImageLayer(bgImage);
@@ -57,7 +57,7 @@ public class HomeScreen extends UIScreen {
       startLayer.addListener(new Mouse.LayerAdapter(){
       @Override
       public void onMouseUp(Mouse.ButtonEvent event){
-        ss.push(gameScreen);
+        ss.push(levelScreen);
       }
     });
 
