@@ -12,10 +12,7 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.Contact;
 import playn.core.*;
-import playn.core.gl.GLShader;
 import playn.core.util.Clock;
-import pythagoras.f.Point;
-import pythagoras.f.Transform;
 import sut.game01.core.character.Bomb;
 import sut.game01.core.character.Ghost1;
 import sut.game01.core.character.Hero;
@@ -100,8 +97,8 @@ public class GameScreen extends Screen {
         //==============================================================
 
         hero = new Hero(world,100f,100f);
-        ghost1 = new Ghost1(world,500f,100f);
-        ghost2 = new Ghost1(world,500f,100f);
+        ghost1 = new Ghost1(world,400f,100f, -2);
+        ghost2 = new Ghost1(world,500f,100f, -2);
         bodies.put(hero.getBody(), "hero_1");
 
         //ghostList1.add(new Ghost1(world,500f,100f));

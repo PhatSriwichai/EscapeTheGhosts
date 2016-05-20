@@ -23,6 +23,7 @@ public class Bomb {
     private boolean contacted;
     private int contactCheck;
     private Body other;
+    private FixtureDef fixtureDef = new FixtureDef();
     private char direction;
     private int checkBoom = 0;
     private boolean check = true;
@@ -88,6 +89,8 @@ public class Bomb {
                     break;
                 case BOOM: offset = 6;
                     if(check == true){
+                        fixtureDef.filter.groupIndex = -3;
+                        body.createFixture(fixtureDef);
                         body.setActive(true);
                         check = false;
                     }
@@ -118,11 +121,12 @@ public class Bomb {
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(50 * TestScreen.M_PER_PIXEL/2,
                 50*TestScreen.M_PER_PIXEL / 2);
-        FixtureDef fixtureDef = new FixtureDef();
+        //fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 0.1f;
         fixtureDef.friction = 0.8f;
         fixtureDef.restitution = 0.35f;
+        fixtureDef.filter.groupIndex = -2;
         body.createFixture(fixtureDef);
 
         //body.createFixture(fixtureDef);
