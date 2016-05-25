@@ -108,6 +108,8 @@ public class Bomb {
                     if(spriteIndex == 11){
                         state = State.IDLE;
                         sprite.layer().setVisible(false);
+                        world.destroyBody(body);
+                        game.removeBomb();
 
                     }
                     break;

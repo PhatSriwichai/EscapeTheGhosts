@@ -27,6 +27,8 @@ public class Ghost1 {
     private Body other;
     private Clock clock;
     private int groupIndex;
+    private World world;
+    private boolean checkDestroy = false;
 
     public enum State{
         WALK, ATTK
@@ -36,6 +38,7 @@ public class Ghost1 {
     private int offset = 0;
 
     public Ghost1(final World world, final float x_px, final float y_px, final int groupIndex){
+        this.world = world;
         this.groupIndex = groupIndex;
         sprite = SpriteLoader.getSprite("images/sprites/ghost2.json");
         sprite.addCallback(new Callback<Sprite>(){
@@ -65,6 +68,11 @@ public class Ghost1 {
 
     public void update(int delta){
         e += delta;
+        if(checkDestroy == true){
+            sprite.layer().setVisible(false);
+            world.destroyBody(body);
+            checkDestroy = false;
+        }
         if(e > 150){
             switch(state) {
                 case WALK: offset = 0; break;
@@ -133,6 +141,7 @@ public class Ghost1 {
         contactCheck = 0;
         if(c == "Bomb"){
             body.applyLinearImpulse(new Vec2(100f, 50f), body.getPosition());
+            checkDestroy = true;
         }
         if(c == "Hero"){
             state = State.ATTK;
