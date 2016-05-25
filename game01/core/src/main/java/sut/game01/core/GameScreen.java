@@ -1,6 +1,5 @@
 package sut.game01.core;
 
-
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.callbacks.DebugDraw;
@@ -19,9 +18,7 @@ import sut.game01.core.character.Hero;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static playn.core.PlayN.assets;
 import static playn.core.PlayN.graphics;
@@ -38,6 +35,8 @@ public class GameScreen extends Screen {
     private ImageLayer heart3;
     private Image heroProfileImage;
     private ImageLayer heroProfile;
+    private Image pauseImage;
+    private ImageLayer pause;
     //private Layer layer1 = new GameScreen().layer;
 
     private GroupLayer groupBomb = graphics().createGroupLayer();
@@ -46,6 +45,7 @@ public class GameScreen extends Screen {
     private Hero hero;
     private Ghost1 ghost1;
     private Ghost1 ghost2;
+    private GamePauseScreen gamePause;
 
     public static float M_PER_PIXEL = 1/26.666667f;
     private static int width = 24;
@@ -55,9 +55,12 @@ public class GameScreen extends Screen {
 
     private static World world;
     private HashMap<Object, String> bodies;
+    private HashMap<Bomb, String> bombHash;
     private List<Hero> heroMap;
     private List<Ghost1> ghostList1;
     private static List<Bomb> bombList;
+
+    private Queue que;
 
     private int i = 0;
     private int e=0;
@@ -66,8 +69,8 @@ public class GameScreen extends Screen {
     private int heartCount = 3;
     private int hCount = 0;
     private Bomb bomb;
-
-
+    private int bombIndex = 0;
+    private int ghostTime = 0;
 
 
     public GameScreen(final ScreenStack ss){
@@ -78,12 +81,13 @@ public class GameScreen extends Screen {
         world.setWarmStarting(true);
         world.setAutoClearForces(true);
 
+        que = new LinkedList();
+
         bodies = new HashMap<Object, String>();
+        bombHash = new HashMap<Bomb, String>();
         heroMap = new ArrayList<Hero>();
         bombList = new ArrayList<Bomb>();
         ghostList1 = new ArrayList<Ghost1>();
-
-
 
         bgImage = assets().getImage("images/background/bg1.png");
         bgLayer = graphics().createImageLayer(bgImage);
@@ -98,13 +102,17 @@ public class GameScreen extends Screen {
         heart = graphics().createImageLayer(heartImage);
         heart2 = graphics().createImageLayer(heartImage);
         heart3 = graphics().createImageLayer(heartImage);
-        heart.setTranslation(80,25);
-        heart2.setTranslation(130,25);
-        heart3.setTranslation(180,25);
+        heart.setTranslation(85,0);
+        heart2.setTranslation(140,0);
+        heart3.setTranslation(195,0);
 
-        heroProfileImage = assets().getImage("images/item/hero.png");
+        heroProfileImage = assets().getImage("images/item/hero1.png");
         heroProfile = graphics().createImageLayer(heroProfileImage);
-        heroProfile.setTranslation(5, 10);
+        heroProfile.setTranslation(5, 20);
+
+        pauseImage = assets().getImage("images/button/pause.png");
+        pause = graphics().createImageLayer(pauseImage);
+        pause.setTranslation(300f,10f);
 
         backLayer.addListener(new Mouse.LayerAdapter(){
             @Override
@@ -113,25 +121,22 @@ public class GameScreen extends Screen {
             }
         });
 
-        //==============================================================
+        gamePause = new GamePauseScreen(ss, bgImage);
 
+        pause.addListener(new Mouse.LayerAdapter(){
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event){
+                ss.push(gamePause);
+            }
+        });
+
+        //==============================================================
         hero = new Hero(world,100f,100f);
-        ghost1 = new Ghost1(world,400f,100f, -2);
-        ghost2 = new Ghost1(world,500f,100f, -2);
         bodies.put(hero.getBody(), "hero_1");
 
-        //ghostList1.add(new Ghost1(world,500f,100f));
-
-
-        //bombList.add(new Bomb(world, 200f, 300f));
-       // bombList.add(new Bomb(world, 300f, 300f));
-        //bombList.add(new Bomb(world, 400f, 300f));
-
 
     }
-    public GameScreen(){
-
-    }
+    public GameScreen(){ }
 
     @Override
     public void wasShown() {
@@ -142,6 +147,7 @@ public class GameScreen extends Screen {
         this.layer.add(heart);
         this.layer.add(heart2);
         this.layer.add(heart3);
+        this.layer.add(pause);
 
 
         Body ground = world.createBody(new BodyDef());
@@ -175,27 +181,19 @@ public class GameScreen extends Screen {
                 if(a == hero.getBody()|| b == hero.getBody()){
                     //hero.contact(contact);
                 }
-                    for(Bomb bomb: bombList) {
-                        if ((a == bomb.getBody() && b == ghost1.getBody()) || (b == bomb.getBody() && a == ghost1.getBody())) {
-                            ghost1.contact(contact, "Bomb");
+                    for(Ghost1 g:ghostList1){
+                        if((a == hero.getBody()&& b == g.getBody()) || (b == hero.getBody()&& a == g.getBody())){
+                            g.contact(contact, "Hero");
+                            hero.contact(contact);
+                            heartCount--;
+                            checkHeart(heartCount);
+                        }
+                        for(Bomb bomb: bombList) {
+                            if ((a == bomb.getBody() && b == g.getBody()) || (b == bomb.getBody() && a == g.getBody())) {
+                                g.contact(contact, "Bomb");
+                            }
                         }
                     }
-                    if((a == hero.getBody()&& b == ghost1.getBody()) || (b == hero.getBody()&& a == ghost1.getBody())){
-                        ghost1.contact(contact, "Hero");
-                        hero.contact(contact);
-                        heartCount--;
-                        checkHeart(heartCount);
-                    }
-                    for(Bomb bomb: bombList) {
-                        if ((a == bomb.getBody() && b == ghost2.getBody()) || (b == bomb.getBody() && a == ghost2.getBody())) {
-                            ghost2.contact(contact, "Bomb");
-                        }
-                    }
-                if((a == hero.getBody()&& b == ghost2.getBody()) || (b == hero.getBody()&& a == ghost2.getBody())){
-                    ghost2.contact(contact, "Hero");
-                }
-
-
                 for(Bomb bomb: bombList){
                     if(a==bomb.getBody()|| b == bomb.getBody() ){
                         //bomb.contact(contact, hero);
@@ -221,17 +219,20 @@ public class GameScreen extends Screen {
                 Body a = contact.getFixtureA().getBody();
                 Body b = contact.getFixtureB().getBody();
 
-                if((a == hero.getBody()&& b == ghost1.getBody()) || (b == hero.getBody()&& a == ghost1.getBody())){
-                    hCount++;
-                    if(hCount > 1000){
-                        ghost1.contact(contact, "Hero");
-                        hero.contact(contact);
-                        heartCount--;
-                        checkHeart(heartCount);
-                        hCount = 0;
-                    }
+                for(Ghost1 g:ghostList1){
+                    if((a == hero.getBody()&& b == g.getBody()) || (b == hero.getBody()&& a == g.getBody())){
+                        hCount++;
+                        if(hCount > 1000){
+                            g.contact(contact, "Hero");
+                            hero.contact(contact);
+                            heartCount--;
+                            checkHeart(heartCount);
+                            hCount = 0;
+                        }
 
+                    }
                 }
+
 
             }
         });
@@ -240,9 +241,9 @@ public class GameScreen extends Screen {
         this.layer.add(hero.layer());
         ghostLayer1.add(ghost1.layer());
         ghostLayer2.add(ghost2.layer());
-        this.layer.add(ghostLayer1);
-        this.layer.add(ghostLayer2);
-        this.layer.add(groupBomb);
+        for(Ghost1 g:ghostList1){
+            this.layer.add(g.layer());
+        }
         for(Bomb b: bombList){
             //this.layer.add(b.layer());
         }
@@ -252,8 +253,13 @@ public class GameScreen extends Screen {
     public void update(int delta){
         super.update(delta);
         hero.update(delta);
-        ghost1.update(delta);
-        ghost2.update(delta);
+        //ghost1.update(delta);
+        //ghost2.update(delta);
+
+        for(Ghost1 g:ghostList1){
+            g.update(delta);
+            this.layer.add(g.layer());
+        }
 
 
         for(Bomb b: bombList){
@@ -262,9 +268,13 @@ public class GameScreen extends Screen {
 
         for(Bomb b: bombList){
             //this.layer.add(b.layer());
-            groupBomb.add(b.layer());
+            this.layer.add(b.layer());
         }
-
+        ghostTime++;
+        if(ghostTime > 300){
+            ghostList1.add(new Ghost1(world,400f,400f, -2));
+            ghostTime = 0;
+        }
         world.step(0.033f, 10, 10);
     }
 
@@ -272,16 +282,14 @@ public class GameScreen extends Screen {
     public void paint(Clock clock) {
         super.paint(clock);
         hero.paint(clock);
-        ghost1.paint(clock);
-        ghost2.paint(clock);
+        for(Ghost1 g:ghostList1){
+            g.paint(clock);
+        }
 
         for(Bomb b: bombList){
             b.paint(clock);
         }
-        //for(Hero h: heroMap){
-        //System.out.println("paint");
-        // h.paint(clock);
-        //}
+
         if(showDebugDraw){
             debugDraw.getCanvas().clear();
             world.drawDebugData();
@@ -293,7 +301,14 @@ public class GameScreen extends Screen {
 
     }
     public void addBomb(Bomb b){
-        bombList.add(b);
+       bombList.add(b);
+        //que.add(b);
+    }
+
+    public void removeBomb(){
+        //world.destroyBody(bombList.get(bombIndex++).getBody());
+        //bombList.remove(bombList.get(0));
+
     }
 
     public void checkHeart(int count){
