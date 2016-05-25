@@ -81,7 +81,7 @@ public class Ghost1 {
                     body.getPosition().y / GameScreen.M_PER_PIXEL);
             e=0;
         }
-        body.applyForce(new Vec2(-70.0f, 0.0f), body.getPosition());
+
     }
 
     public void paint(Clock clock){
@@ -93,6 +93,7 @@ public class Ghost1 {
         sprite.layer().setTranslation(
                 (body.getPosition().x / GameScreen.M_PER_PIXEL - 7),
                 body.getPosition().y / GameScreen.M_PER_PIXEL);
+        walk();
 
     }
 
@@ -108,7 +109,7 @@ public class Ghost1 {
                 sprite.layer().height()*TestScreen.M_PER_PIXEL / 2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 0.3f;
+        fixtureDef.density = 0.2f;
         fixtureDef.friction = 0.1f;
         fixtureDef.restitution = 0.35f;
         fixtureDef.filter.groupIndex = groupIndex;
@@ -141,5 +142,9 @@ public class Ghost1 {
         }else{
             other = contact.getFixtureA().getBody();
         }
+    }
+
+    public void walk(){
+        body.applyForce(new Vec2(-30.0f, 0.0f), body.getPosition());
     }
 }

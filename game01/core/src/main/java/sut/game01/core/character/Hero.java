@@ -414,8 +414,9 @@ public class Hero{
         if(state == State.ATTK || state == State.ATTK2){
             //state = State.IDLE;
         }
-        if(contact.getFixtureA().getBody()==body){
+        if(contact.getFixtureA().getBody()==body || contact.getFixtureB().getBody()==body){
             other = contact.getFixtureB().getBody();
+            body.applyLinearImpulse(new Vec2(-10f,3f), body.getPosition());
         }else{
             other = contact.getFixtureA().getBody();
         }
