@@ -27,11 +27,17 @@ import static playn.core.PlayN.assets;
 import static playn.core.PlayN.graphics;
 
 public class GameScreen extends Screen {
-    //private final ScreenStack ss;
+    private ScreenStack ss;
     private Image bgImage;
     private ImageLayer bgLayer;
     private Image backButton;
     private ImageLayer backLayer;
+    private Image heartImage;
+    private ImageLayer heart;
+    private ImageLayer heart2;
+    private ImageLayer heart3;
+    private Image heroProfileImage;
+    private ImageLayer heroProfile;
     //private Layer layer1 = new GameScreen().layer;
 
     private GroupLayer groupBomb = graphics().createGroupLayer();
@@ -57,16 +63,16 @@ public class GameScreen extends Screen {
     private int e=0;
     private int g = 0;
     private int core = 0;
+    private int heartCount = 3;
+    private int hCount = 0;
     private Bomb bomb;
 
-    public GameScreen(){
 
-    }
 
 
     public GameScreen(final ScreenStack ss){
         //===============================================================
-        //this.ss = ss;
+        this.ss = ss;
         Vec2 gravity = new Vec2(0.0f,100.0f);
         world = new World(gravity);
         world.setWarmStarting(true);
@@ -78,6 +84,7 @@ public class GameScreen extends Screen {
         ghostList1 = new ArrayList<Ghost1>();
 
 
+
         bgImage = assets().getImage("images/background/bg1.png");
         bgLayer = graphics().createImageLayer(bgImage);
         graphics().rootLayer().add(bgLayer);
@@ -85,7 +92,19 @@ public class GameScreen extends Screen {
         backButton = assets().getImage("images/backButton.png");
         backLayer = graphics().createImageLayer(backButton);
         //graphics().rootLayer().add(backLayer);
-        backLayer.setTranslation(10,10);
+        backLayer.setTranslation(500,10);
+
+        heartImage = assets().getImage("images/item/heart.png");
+        heart = graphics().createImageLayer(heartImage);
+        heart2 = graphics().createImageLayer(heartImage);
+        heart3 = graphics().createImageLayer(heartImage);
+        heart.setTranslation(80,25);
+        heart2.setTranslation(130,25);
+        heart3.setTranslation(180,25);
+
+        heroProfileImage = assets().getImage("images/item/hero.png");
+        heroProfile = graphics().createImageLayer(heroProfileImage);
+        heroProfile.setTranslation(5, 10);
 
         backLayer.addListener(new Mouse.LayerAdapter(){
             @Override
@@ -110,12 +129,20 @@ public class GameScreen extends Screen {
 
 
     }
+    public GameScreen(){
+
+    }
 
     @Override
     public void wasShown() {
         super.wasShown();
         //this.layer.add(bgLayer);
         this.layer.add(backLayer);
+        this.layer.add(heroProfile);
+        this.layer.add(heart);
+        this.layer.add(heart2);
+        this.layer.add(heart3);
+
 
         Body ground = world.createBody(new BodyDef());
         EdgeShape groundShape = new EdgeShape();
@@ -145,51 +172,32 @@ public class GameScreen extends Screen {
                 Body a = contact.getFixtureA().getBody();
                 Body b = contact.getFixtureB().getBody();
 
-                if(contact.getFixtureA().getBody() == hero.getBody()||
-                        contact.getFixtureB().getBody() == hero.getBody()){
+                if(a == hero.getBody()|| b == hero.getBody()){
                     //hero.contact(contact);
                 }
-                /*for(Bomb bomb: bombList){
-                    if((contact.getFixtureA().getBody() == bomb.getBody()&&
-                            contact.getFixtureB().getBody() == ghost1.getBody()) ||
-                            (contact.getFixtureB().getBody() == bomb.getBody()&&
-                                    contact.getFixtureA().getBody() == ghost1.getBody())){
-                        ghost1.contact(contact, "Bomb");
-                    }
-                }*/
                     for(Bomb bomb: bombList) {
-                        if ((contact.getFixtureA().getBody() == bomb.getBody() &&
-                                contact.getFixtureB().getBody() == ghost1.getBody()) ||
-                                (contact.getFixtureB().getBody() == bomb.getBody() &&
-                                        contact.getFixtureA().getBody() == ghost1.getBody())) {
+                        if ((a == bomb.getBody() && b == ghost1.getBody()) || (b == bomb.getBody() && a == ghost1.getBody())) {
                             ghost1.contact(contact, "Bomb");
                         }
                     }
-                    if((contact.getFixtureA().getBody() == hero.getBody()&&
-                            contact.getFixtureB().getBody() == ghost1.getBody()) ||
-                            (contact.getFixtureB().getBody() == hero.getBody()&&
-                                    contact.getFixtureA().getBody() == ghost1.getBody())){
+                    if((a == hero.getBody()&& b == ghost1.getBody()) || (b == hero.getBody()&& a == ghost1.getBody())){
                         ghost1.contact(contact, "Hero");
+                        hero.contact(contact);
+                        heartCount--;
+                        checkHeart(heartCount);
                     }
                     for(Bomb bomb: bombList) {
-                        if ((contact.getFixtureA().getBody() == bomb.getBody() &&
-                            contact.getFixtureB().getBody() == ghost2.getBody()) ||
-                            (contact.getFixtureB().getBody() == bomb.getBody() &&
-                                    contact.getFixtureA().getBody() == ghost2.getBody())) {
-                        ghost2.contact(contact, "Bomb");
+                        if ((a == bomb.getBody() && b == ghost2.getBody()) || (b == bomb.getBody() && a == ghost2.getBody())) {
+                            ghost2.contact(contact, "Bomb");
                         }
                     }
-                if((contact.getFixtureA().getBody() == hero.getBody()&&
-                        contact.getFixtureB().getBody() == ghost2.getBody()) ||
-                        (contact.getFixtureB().getBody() == hero.getBody()&&
-                                contact.getFixtureA().getBody() == ghost2.getBody())){
+                if((a == hero.getBody()&& b == ghost2.getBody()) || (b == hero.getBody()&& a == ghost2.getBody())){
                     ghost2.contact(contact, "Hero");
                 }
 
 
                 for(Bomb bomb: bombList){
-                    if(contact.getFixtureA().getBody()==bomb.getBody()||
-                            contact.getFixtureB().getBody() == bomb.getBody() ){
+                    if(a==bomb.getBody()|| b == bomb.getBody() ){
                         //bomb.contact(contact, hero);
                         core++;
                         //bomb.layer().setVisible(false);
@@ -210,6 +218,20 @@ public class GameScreen extends Screen {
 
             @Override
             public void postSolve(Contact contact, ContactImpulse contactImpulse) {
+                Body a = contact.getFixtureA().getBody();
+                Body b = contact.getFixtureB().getBody();
+
+                if((a == hero.getBody()&& b == ghost1.getBody()) || (b == hero.getBody()&& a == ghost1.getBody())){
+                    hCount++;
+                    if(hCount > 1000){
+                        ghost1.contact(contact, "Hero");
+                        hero.contact(contact);
+                        heartCount--;
+                        checkHeart(heartCount);
+                        hCount = 0;
+                    }
+
+                }
 
             }
         });
@@ -224,10 +246,6 @@ public class GameScreen extends Screen {
         for(Bomb b: bombList){
             //this.layer.add(b.layer());
         }
-
-
-
-
     }
 
     @Override
@@ -236,6 +254,7 @@ public class GameScreen extends Screen {
         hero.update(delta);
         ghost1.update(delta);
         ghost2.update(delta);
+
 
         for(Bomb b: bombList){
             b.update(delta);
@@ -275,5 +294,16 @@ public class GameScreen extends Screen {
     }
     public void addBomb(Bomb b){
         bombList.add(b);
+    }
+
+    public void checkHeart(int count){
+        switch(count){
+            case 2: heart3.setVisible(false); break;
+            case 1: heart2.setVisible(false); break;
+            case 0: heart.setVisible(false);
+                ss.push(new GameOverScreen(ss));
+                break;
+        }
+
     }
 }

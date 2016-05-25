@@ -13,6 +13,9 @@ import sut.game01.core.TestScreen;
 import sut.game01.core.sprite.Sprite;
 import sut.game01.core.sprite.SpriteLoader;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Bomb {
     private Sprite sprite;
     private int spriteIndex = 0;
@@ -28,6 +31,9 @@ public class Bomb {
     private int checkBoom = 0;
     private boolean check = true;
     private boolean checkActive = true;
+    private GameScreen game = new GameScreen();
+    private World world;
+    private int c =0;
 
 
     public enum State{
@@ -36,10 +42,12 @@ public class Bomb {
     private State state = State.IDLE;
     private int offset = 0;
     private int e = 0;
+    private List<Bomb> bombs = new ArrayList<Bomb>();
 
     public Bomb(final World world, final float x_px, final float y_px, final char direction){
         this.x = x_px;
         this.y = y_px;
+        this.world = world;
         this.direction = direction;
 
         sprite = SpriteLoader.getSprite("images/sprites/bomb.json");
