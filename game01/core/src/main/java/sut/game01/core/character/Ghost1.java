@@ -85,8 +85,8 @@ public class Ghost1 {
             //body.applyForce(new Vec2(10.0f, 0.0f), body.getPosition());
             spriteIndex = offset + ((spriteIndex + 1)%4);
             sprite.setSprite(spriteIndex);
-            sprite.layer().setTranslation(body.getPosition().x / GameScreen.M_PER_PIXEL,
-                    body.getPosition().y / GameScreen.M_PER_PIXEL);
+            //sprite.layer().setTranslation(body.getPosition().x / GameScreen.M_PER_PIXEL,
+            //        body.getPosition().y / GameScreen.M_PER_PIXEL);
             e=0;
         }
 
