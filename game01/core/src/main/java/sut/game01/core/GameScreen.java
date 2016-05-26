@@ -81,7 +81,11 @@ public class GameScreen extends Screen {
     private int killMax = 10;
     private int ghostCount = 0;
 
+    private float x = 0.0f;
+    private float y = 0.0f;
+
     private boolean checkPoint = true;
+    private boolean pauseCheck = true;
 
 
     public GameScreen(final ScreenStack ss){
@@ -175,7 +179,8 @@ public class GameScreen extends Screen {
         pause.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event){
-                ss.push(gamePause);
+                //ss.push(gamePause);
+                pauseCheck = !pauseCheck;
             }
         });
 
@@ -197,7 +202,6 @@ public class GameScreen extends Screen {
         this.layer.add(heart3);
         this.layer.add(pause);
         this.layer.add(ghostProfile);
-
 
         Body ground = world.createBody(new BodyDef());
         EdgeShape groundShape = new EdgeShape();
@@ -322,28 +326,31 @@ public class GameScreen extends Screen {
     @Override
     public void update(int delta){
         super.update(delta);
-        hero.update(delta);
+        if(pauseCheck == true){
+            hero.update(delta);
 
-        for(Ghost1 g:ghostList1){
-            g.update(delta);
-            this.layer.add(g.layer());
-        }
-        for(Bomb b: bombList){
-            b.update(delta);
-        }
-        for(Bomb b: bombList){
-            //this.layer.add(b.layer());
-            this.layer.add(b.layer());
-        }
-        ghostTime++;
-        if(ghostCount < killMax){
-            if(ghostTime > 100){
-                ghostList1.add(new Ghost1(world,400f,400f, -2));
-                ghostTime = 0;
-                ghostCount++;
+            for(Ghost1 g:ghostList1){
+                g.update(delta);
+                this.layer.add(g.layer());
             }
-        }else if(ghostCount == killMax){
-            ss.push(new GameOverScreen(ss));
+            for(Bomb b: bombList){
+                b.update(delta);
+            }
+            for(Bomb b: bombList){
+                //this.layer.add(b.layer());
+                this.layer.add(b.layer());
+            }
+            ghostTime++;
+            if(ghostCount < killMax){
+                if(ghostTime > 100){
+                    ghostList1.add(new Ghost1(world,400f,400f, -2));
+                    ghostTime = 0;
+                    ghostCount++;
+                }
+            }else if(killCount == killMax){
+                ss.push(new GameOverScreen(ss));
+            }
+            bgLayer.setTranslation(hero.bg_x, hero.bg_y);
         }
 
         //if(checkPoint == true) checkNumber();
@@ -353,34 +360,31 @@ public class GameScreen extends Screen {
     @Override
     public void paint(Clock clock) {
         super.paint(clock);
-        hero.paint(clock);
-        for(Ghost1 g:ghostList1){
-            g.paint(clock);
-        }
+        if(pauseCheck == true){
 
-        for(Bomb b: bombList){
-            b.paint(clock);
-        }
+            hero.paint(clock);
+            for(Ghost1 g:ghostList1){
+                g.paint(clock);
+            }
 
-        if(showDebugDraw){
-            debugDraw.getCanvas().clear();
-            world.drawDebugData();
+            for(Bomb b: bombList){
+                b.paint(clock);
+            }
 
-            debugDraw.getCanvas().setFillColor(Color.rgb(255,255,255));
-            debugDraw.getCanvas().drawText("Score = "+String.valueOf(core),100,100);
+            if(showDebugDraw){
+                debugDraw.getCanvas().clear();
+                world.drawDebugData();
+
+                debugDraw.getCanvas().setFillColor(Color.rgb(0,128,128));
+                debugDraw.getCanvas().drawText("Score = "+String.valueOf(core),100,100);
+            }
+
         }
 
 
     }
     public void addBomb(Bomb b){
        bombList.add(b);
-        //que.add(b);
-    }
-
-    public void removeBomb(){
-        //world.destroyBody(bombList.get(bombIndex++).getBody());
-        //bombList.remove(bombList.get(0));
-
     }
 
     public void checkHeart(int count){
