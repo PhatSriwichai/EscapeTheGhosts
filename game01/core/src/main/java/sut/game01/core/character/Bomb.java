@@ -109,8 +109,6 @@ public class Bomb {
                         state = State.IDLE;
                         sprite.layer().setVisible(false);
                         world.destroyBody(body);
-                        game.removeBomb();
-
                     }
                     break;
             }

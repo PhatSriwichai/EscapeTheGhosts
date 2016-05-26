@@ -22,8 +22,10 @@ public class Hero{
     private Sprite sprite;
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
-    private float x;
-    private float y;
+    public float x = 0.0f;
+    public float y = 0.0f;
+    public float bg_x = 0.0f;
+    public float bg_y = 0.0f;
     private Body body;
     private boolean contacted;
     private int contactCheck;
@@ -32,6 +34,8 @@ public class Hero{
     private World world;
     public GameScreen game = new GameScreen();
     private Clock clock;
+    private boolean checkRun = true;
+
 
     public static enum State{
         IDLE, IDLE2, IDLE3, RUN, RUN2, RUN3, ATTK, ATTK2, ATTK3,
@@ -77,10 +81,7 @@ public class Hero{
             public void onFailure(Throwable cause){
                 //PlayN.log().error("Error loading image!", cause);
             }
-
         });
-
-
     }
     public Layer layer(){
         return sprite.layer();
@@ -90,76 +91,136 @@ public class Hero{
         if(hasLoaded == false) return;
 
         PlayN.keyboard().setListener(new Keyboard.Adapter() {
-            @Override
-            public void onKeyDown(Keyboard.Event event) {
-                if(event.key() == Key.A) {
-                    //direction = Direction.LEFT;
-                    if(state == State.RIDLE || state == State.RIDLE2)
-                        state = State.IDLE;
-                    else
-                        state = State.RUN;
-                    body.applyLinearImpulse(new Vec2(-20.0f,0), body.getPosition());
-                    sprite.layer().setTranslation(body.getPosition().x / TestScreen.M_PER_PIXEL -10,
-                            body.getPosition().y / TestScreen.M_PER_PIXEL);
-                }
-                if (event.key() == Key.D) {
-                    //direction = Direction.RIGHT;
-                    if(state == State.IDLE || state == State.IDLE2)
-                        state = State.RIDLE;
-                    else
-                        state = State.RRUN;
-                    body.applyLinearImpulse(new Vec2(20.0f,0), body.getPosition());
-                }
-                if(event.key() == Key.SPACE){
-                    //jump();
-                    //body.setActive(false);
-                    Bomb b;
-                    switch(state){
-                        case IDLE: state = State.ATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
-                            game.addBomb(b);
-                            break;
-                        case IDLE2: state = State.ATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
-                            game.addBomb(b);
-                            break;
-                        case RUN: state = State.ATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
-                            game.addBomb(b);
-                            break;
-                        case RUN2: state = State.ATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
-                            game.addBomb(b);
-                            break;
-                        case RIDLE: state = State.RATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
-                            game.addBomb(b);
-                            break;
-                        case RIDLE2: state = State.RATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
-                            game.addBomb(b);
-                            break;
-                        case RRUN: state = State.RATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
-                            game.addBomb(b);
-                            break;
-                        case RRUN2: state = State.RATTK;
-                            b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
-                            game.addBomb(b);
-                            break;
+            /*@Override
+            public void onKeyUp(Keyboard.Event event) {
+                //if(checkRun == true){
+                    if (event.key() == Key.A) {
+                        if (state == State.RIDLE || state == State.RIDLE2)
+                            state = State.IDLE;
+                        else
+                            state = State.RUN;
+                        bg_x += 10.0;
+                        body.applyLinearImpulse(new Vec2(-20.0f, 0), body.getPosition());
+                        sprite.layer().setTranslation(body.getPosition().x / TestScreen.M_PER_PIXEL - 10,
+                                body.getPosition().y / TestScreen.M_PER_PIXEL);
+                    }
+                    if (event.key() == Key.D) {
+                        if (state == State.IDLE || state == State.IDLE2)
+                            state = State.RIDLE;
+                        else
+                            state = State.RRUN;
+                        bg_x -= 10.0;
+                        body.applyLinearImpulse(new Vec2(20.0f, 0), body.getPosition());
+                    }
+                    if (event.key() == Key.SPACE) {
+                        Bomb b;
+                        switch (state) {
+                            case IDLE:
+                                state = State.ATTK;
+                                b = new Bomb(world, body.getPosition().x / GameScreen.M_PER_PIXEL - 50, body.getPosition().y / GameScreen.M_PER_PIXEL, 'L');
+                                game.addBomb(b);
+                                break;
+                            case IDLE2:
+                                state = State.ATTK;
+                                b = new Bomb(world, body.getPosition().x / GameScreen.M_PER_PIXEL - 50, body.getPosition().y / GameScreen.M_PER_PIXEL, 'L');
+                                game.addBomb(b);
+                                break;
+                            case RUN:
+                                state = State.ATTK;
+                                b = new Bomb(world, body.getPosition().x / GameScreen.M_PER_PIXEL - 50, body.getPosition().y / GameScreen.M_PER_PIXEL, 'L');
+                                game.addBomb(b);
+                                break;
+                            case RUN2:
+                                state = State.ATTK;
+                                b = new Bomb(world, body.getPosition().x / GameScreen.M_PER_PIXEL - 50, body.getPosition().y / GameScreen.M_PER_PIXEL, 'L');
+                                game.addBomb(b);
+                                break;
+                            case RIDLE:
+                                state = State.RATTK;
+                                b = new Bomb(world, body.getPosition().x / GameScreen.M_PER_PIXEL + 50, body.getPosition().y / GameScreen.M_PER_PIXEL, 'R');
+                                game.addBomb(b);
+                                break;
+                            case RIDLE2:
+                                state = State.RATTK;
+                                b = new Bomb(world, body.getPosition().x / GameScreen.M_PER_PIXEL + 50, body.getPosition().y / GameScreen.M_PER_PIXEL, 'R');
+                                game.addBomb(b);
+                                break;
+                            case RRUN:
+                                state = State.RATTK;
+                                b = new Bomb(world, body.getPosition().x / GameScreen.M_PER_PIXEL + 50, body.getPosition().y / GameScreen.M_PER_PIXEL, 'R');
+                                game.addBomb(b);
+                                break;
+                            case RRUN2:
+                                state = State.RATTK;
+                                b = new Bomb(world, body.getPosition().x / GameScreen.M_PER_PIXEL + 50, body.getPosition().y / GameScreen.M_PER_PIXEL, 'R');
+                                game.addBomb(b);
+                                break;
+                        //}
                     }
 
-                    //b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +15,body.getPosition().y/GameScreen.M_PER_PIXEL);
-                    //game.addBomb(b);
-
-                    //body.setActive(true);
-
-                    //bombList.add(new Bomb(world, body.getPosition().x, body.getPosition().y));
-                    //for(Bomb b: bombList){
-                        //game.addBomb(b);
-                    //}
-
                 }
+            }*/
+
+            @Override
+            public void onKeyDown(Keyboard.Event event) {
+                //if(checkRun == true){
+                    if(event.key() == Key.A) {
+                        if(state == State.RIDLE || state == State.RIDLE2)
+                            state = State.IDLE;
+                        else
+                            state = State.RUN;
+                        bg_x += 10.0;
+                        body.applyLinearImpulse(new Vec2(-20.0f,0), body.getPosition());
+                        sprite.layer().setTranslation(body.getPosition().x / TestScreen.M_PER_PIXEL -10,
+                                body.getPosition().y / TestScreen.M_PER_PIXEL);
+                    }
+                    if (event.key() == Key.D) {
+                        if(state == State.IDLE || state == State.IDLE2)
+                            state = State.RIDLE;
+                        else
+                            state = State.RRUN;
+                        bg_x -= 10.0;
+                        body.applyLinearImpulse(new Vec2(20.0f,0), body.getPosition());
+                    }
+                    if(event.key() == Key.SPACE){
+                        Bomb b;
+                        switch(state){
+                            case IDLE: state = State.ATTK;
+                                b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
+                                game.addBomb(b);
+                                break;
+                            case IDLE2: state = State.ATTK;
+                                b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
+                                game.addBomb(b);
+                                break;
+                            case RUN: state = State.ATTK;
+                                b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
+                                game.addBomb(b);
+                                break;
+                            case RUN2: state = State.ATTK;
+                                b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
+                                game.addBomb(b);
+                                break;
+                            case RIDLE: state = State.RATTK;
+                                b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
+                                game.addBomb(b);
+                                break;
+                            case RIDLE2: state = State.RATTK;
+                                b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
+                                game.addBomb(b);
+                                break;
+                            case RRUN: state = State.RATTK;
+                                b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
+                                game.addBomb(b);
+                                break;
+                            case RRUN2: state = State.RATTK;
+                                b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
+                                game.addBomb(b);
+                                break;
+                        }
+                    }
+                    //checkRun = false;
+                //}
 
             }
 
