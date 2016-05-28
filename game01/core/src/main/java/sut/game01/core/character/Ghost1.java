@@ -31,15 +31,21 @@ public class Ghost1 {
     private boolean checkDestroy = false;
 
     public enum State{
-        WALK, ATTK
+        WALK, ATTK, RWALK, RATTK
     };
-    private State state = State.WALK;
+    private State state;
     private int e = 0;
     private int offset = 0;
+    private char direction;
 
-    public Ghost1(final World world, final float x_px, final float y_px, final int groupIndex){
+    public Ghost1(final World world, final float x_px, final float y_px, final int groupIndex, final char direction){
         this.world = world;
         this.groupIndex = groupIndex;
+        this.direction = direction;
+
+        if(direction == 'L')        state = State.WALK;
+        else if(direction == 'R')   state = State.RWALK;
+
         sprite = SpriteLoader.getSprite("images/sprites/ghost2.json");
         sprite.addCallback(new Callback<Sprite>(){
             @Override
@@ -48,8 +54,8 @@ public class Ghost1 {
                 sprite.layer().setOrigin(sprite.width() / 2f,
                         sprite.height() / 2f);
                 sprite.layer().setTranslation(x, y + 13f);
-                body = initPhysicsBody(world, GameScreen.M_PER_PIXEL * x_px,
-                        GameScreen.M_PER_PIXEL * y_px);
+                body = initPhysicsBody(world, x_px,
+                         y_px);
 
                 hasLoaded = true;
 
@@ -81,6 +87,13 @@ public class Ghost1 {
                                 state = State.WALK;
                             }
                             break;
+                case RWALK: offset = 8; break;
+                case RATTK: offset = 12;
+                    if(spriteIndex == 15){
+                        state = State.RWALK;
+                    }
+                    break;
+
             }
             //body.applyForce(new Vec2(10.0f, 0.0f), body.getPosition());
             spriteIndex = offset + ((spriteIndex + 1)%4);
@@ -101,7 +114,7 @@ public class Ghost1 {
         sprite.layer().setTranslation(
                 (body.getPosition().x / GameScreen.M_PER_PIXEL - 7),
                 body.getPosition().y / GameScreen.M_PER_PIXEL);
-        walk();
+        walk(direction);
 
     }
 
@@ -140,11 +153,13 @@ public class Ghost1 {
         contacted = true;
         contactCheck = 0;
         if(c == "Bomb"){
-            body.applyLinearImpulse(new Vec2(100f, 50f), body.getPosition());
+            if(direction == 'L') body.applyLinearImpulse(new Vec2(100f, 50f), body.getPosition());
+            else if(direction == 'R') body.applyLinearImpulse(new Vec2(-100f, 50f), body.getPosition());
             checkDestroy = true;
         }
         if(c == "Hero"){
-            state = State.ATTK;
+            if(direction == 'L') state = State.ATTK;
+            else if(direction == 'R') state = State.RATTK;
         }
         if(contact.getFixtureA().getBody()==body){
             other = contact.getFixtureB().getBody();
@@ -153,7 +168,9 @@ public class Ghost1 {
         }
     }
 
-    public void walk(){
-        body.applyForce(new Vec2(-30.0f, 0.0f), body.getPosition());
+    public void walk(char direction){
+        if(direction == 'L') body.applyForce(new Vec2(-30.0f, 0.0f), body.getPosition());
+        else if(direction == 'R') body.applyForce(new Vec2(+30.0f, 0.0f), body.getPosition());
+
     }
 }
