@@ -54,7 +54,7 @@ public class GameScreen extends Screen {
     private GamePauseScreen gamePause;
 
     public static float M_PER_PIXEL = 1/26.666667f;
-    private static int width = 24;
+    private static int width = 36;
     private static int height = 18;
     private boolean showDebugDraw = true;
     private DebugDrawBox2D debugDraw;
@@ -77,6 +77,7 @@ public class GameScreen extends Screen {
     private Bomb bomb;
     private int bombIndex = 0;
     private int ghostTime = 0;
+    private int ghostTimeR = 0;
     private int killCount = 0;
     private int killMax = 10;
     private int ghostCount = 0;
@@ -340,10 +341,17 @@ public class GameScreen extends Screen {
                 //this.layer.add(b.layer());
                 this.layer.add(b.layer());
             }
+            ghostTimeR++;
             ghostTime++;
             if(ghostCount < killMax){
                 if(ghostTime > 100){
-                    ghostList1.add(new Ghost1(world,400f,400f, -2));
+                    int randomNum = 0 + (int)(Math.random() * 2);
+                    System.out.println(randomNum);
+                    if(randomNum == 1){
+                        ghostList1.add(new Ghost1(world,hero.getBody().getPosition().x+10, hero.getBody().getPosition().y, -2, 'L'));
+                    }else if(randomNum == 0){
+                        ghostList1.add(new Ghost1(world,hero.getBody().getPosition().x-10, hero.getBody().getPosition().y, -2, 'R'));
+                    }
                     ghostTime = 0;
                     ghostCount++;
                 }

@@ -221,9 +221,7 @@ public class Hero{
                     }
                     //checkRun = false;
                 //}
-
             }
-
         });
 
         d1 += delta;
