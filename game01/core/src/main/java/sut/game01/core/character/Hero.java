@@ -11,9 +11,12 @@ import playn.core.PlayN;
 import playn.core.util.Callback;
 import playn.core.util.Clock;
 import sut.game01.core.GameScreen;
+import sut.game01.core.GameScreen2;
+import sut.game01.core.GameScreen3;
 import sut.game01.core.TestScreen;
 import sut.game01.core.sprite.Sprite;
 import sut.game01.core.sprite.SpriteLoader;
+import tripleplay.game.Screen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +36,9 @@ public class Hero{
     private List<Bomb> bombList;
     private World world;
     public GameScreen game = new GameScreen();
+    public GameScreen2 game2 = new GameScreen2();
+    public GameScreen3 game3 = new GameScreen3();
+    //public Screen game = new GameScreen2();
     private Clock clock;
     private boolean checkRun = true;
 
@@ -53,12 +59,14 @@ public class Hero{
     private boolean d = false;
     private int d1 = 0;
     private int offset = 0;
+    private int screenIndex;
 
-    public Hero(final World world, final float x_px, final float y_px){
+    public Hero(final World world, final float x_px, final float y_px, int screenIndex){
     //public Hero(final World world){
         this.world = world;
         this.x = x_px;
         this.y = y_px;
+        this.screenIndex = screenIndex;
         bombList = new ArrayList<Bomb>();
           
         sprite = SpriteLoader.getSprite("images/sprites/hero.json");
@@ -69,8 +77,7 @@ public class Hero{
                 sprite.layer().setOrigin(sprite.width() / 2f,
                         sprite.height() / 2f);
                 sprite.layer().setTranslation(x, y + 13f);
-                body = initPhysicsBody(world, TestScreen.M_PER_PIXEL * x_px,
-                                       TestScreen.M_PER_PIXEL * y_px);
+                body = initPhysicsBody(world, x_px, y_px);
 
                 hasLoaded = true;
 
@@ -169,7 +176,7 @@ public class Hero{
                             state = State.IDLE;
                         else
                             state = State.RUN;
-                        bg_x += 10.0;
+                        bg_x += 4;
                         body.applyLinearImpulse(new Vec2(-20.0f,0), body.getPosition());
                         sprite.layer().setTranslation(body.getPosition().x / TestScreen.M_PER_PIXEL -10,
                                 body.getPosition().y / TestScreen.M_PER_PIXEL);
@@ -179,7 +186,7 @@ public class Hero{
                             state = State.RIDLE;
                         else
                             state = State.RRUN;
-                        bg_x -= 10.0;
+                        bg_x -= 4;
                         body.applyLinearImpulse(new Vec2(20.0f,0), body.getPosition());
                     }
                     if(event.key() == Key.SPACE){
@@ -187,35 +194,67 @@ public class Hero{
                         switch(state){
                             case IDLE: state = State.ATTK;
                                 b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
-                                game.addBomb(b);
+                                switch(screenIndex){
+                                    case 1: game.addBomb(b); break;
+                                    case 2: game2.addBomb(b); break;
+                                    case 3: game3.addBomb(b); break;
+                                }
                                 break;
                             case IDLE2: state = State.ATTK;
                                 b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
-                                game.addBomb(b);
+                                switch(screenIndex){
+                                    case 1: game.addBomb(b); break;
+                                    case 2: game2.addBomb(b); break;
+                                    case 3: game3.addBomb(b); break;
+                                }
                                 break;
                             case RUN: state = State.ATTK;
                                 b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
-                                game.addBomb(b);
+                                switch(screenIndex){
+                                    case 1: game.addBomb(b); break;
+                                    case 2: game2.addBomb(b); break;
+                                    case 3: game3.addBomb(b); break;
+                                }
                                 break;
                             case RUN2: state = State.ATTK;
                                 b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL -50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'L');
-                                game.addBomb(b);
+                                switch(screenIndex){
+                                    case 1: game.addBomb(b); break;
+                                    case 2: game2.addBomb(b); break;
+                                    case 3: game3.addBomb(b); break;
+                                }
                                 break;
                             case RIDLE: state = State.RATTK;
                                 b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
-                                game.addBomb(b);
+                                switch(screenIndex){
+                                    case 1: game.addBomb(b); break;
+                                    case 2: game2.addBomb(b); break;
+                                    case 3: game3.addBomb(b); break;
+                                }
                                 break;
                             case RIDLE2: state = State.RATTK;
                                 b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
-                                game.addBomb(b);
+                                switch(screenIndex){
+                                    case 1: game.addBomb(b); break;
+                                    case 2: game2.addBomb(b); break;
+                                    case 3: game3.addBomb(b); break;
+                                }
                                 break;
                             case RRUN: state = State.RATTK;
                                 b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
-                                game.addBomb(b);
+                                switch(screenIndex){
+                                    case 1: game.addBomb(b); break;
+                                    case 2: game2.addBomb(b); break;
+                                    case 3: game3.addBomb(b); break;
+                                }
                                 break;
                             case RRUN2: state = State.RATTK;
                                 b = new Bomb(world, body.getPosition().x/GameScreen.M_PER_PIXEL +50,body.getPosition().y/GameScreen.M_PER_PIXEL, 'R');
-                                game.addBomb(b);
+                                switch(screenIndex){
+                                    case 1: game.addBomb(b); break;
+                                    case 2: game2.addBomb(b); break;
+                                    case 3: game3.addBomb(b); break;
+                                }
                                 break;
                         }
                     }
