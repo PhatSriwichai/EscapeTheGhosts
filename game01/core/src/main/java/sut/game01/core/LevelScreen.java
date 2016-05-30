@@ -15,6 +15,8 @@ import static playn.core.PlayN.graphics;
 public class LevelScreen extends Screen {
     private ScreenStack ss;
     private GameScreen gameScreen;
+    private GameScreen2 gameScreen2;
+    private GameScreen3 gameScreen3;
     private Image bgImage;
     private ImageLayer bg;
     private Image selectImage;
@@ -31,6 +33,8 @@ public class LevelScreen extends Screen {
     public LevelScreen(final ScreenStack ss) {
         this.ss = ss;
         gameScreen = new GameScreen(ss);
+        gameScreen2 = new GameScreen2(ss);
+        gameScreen3 = new GameScreen3(ss);
         bgImage = assets().getImage("images/homeBackground2.png");
         bg = graphics().createImageLayer(bgImage);
 
@@ -59,6 +63,18 @@ public class LevelScreen extends Screen {
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
                 ss.push(gameScreen);
+            }
+        });
+        level2.addListener(new Mouse.LayerAdapter() {
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event) {
+                ss.push(gameScreen2);
+            }
+        });
+        level3.addListener(new Mouse.LayerAdapter() {
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event) {
+                ss.push(gameScreen3);
             }
         });
 

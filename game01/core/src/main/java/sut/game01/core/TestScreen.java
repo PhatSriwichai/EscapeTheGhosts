@@ -81,7 +81,7 @@ public class TestScreen extends Screen {
     });
     //==============================================================
 
-      hero = new Hero(world,150f,150f);
+      hero = new Hero(world,150f,150f, 0);
       bodies.put(hero.getBody(), "hero_1");
       //bombList.add(new Bomb(world, 200f, 300f));
       //bombList.add(new Bomb(world, 300f, 300f));

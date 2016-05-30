@@ -15,7 +15,7 @@ import sut.game01.core.sprite.SpriteLoader;
 /**
  * Created by GGGCOM on 17/5/2559.
  */
-public class Ghost1 {
+public class GhostRun {
     private Sprite sprite;
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
@@ -39,7 +39,7 @@ public class Ghost1 {
     private char direction;
     private int timeDestroy = 0;
 
-    public Ghost1(final World world, final float x_px, final float y_px, final int groupIndex, final char direction){
+    public GhostRun(final World world, final float x_px, final float y_px, final int groupIndex, final char direction){
         this.world = world;
         this.groupIndex = groupIndex;
         this.direction = direction;
@@ -47,7 +47,7 @@ public class Ghost1 {
         if(direction == 'L')        state = State.WALK;
         else if(direction == 'R')   state = State.RWALK;
 
-        sprite = SpriteLoader.getSprite("images/sprites/ghost2.json");
+        sprite = SpriteLoader.getSprite("images/sprites/ghostRun.json");
         sprite.addCallback(new Callback<Sprite>(){
             @Override
             public void onSuccess(Sprite result){
@@ -56,7 +56,7 @@ public class Ghost1 {
                         sprite.height() / 2f);
                 sprite.layer().setTranslation(x, y + 13f);
                 body = initPhysicsBody(world, x_px,
-                         y_px);
+                        y_px);
 
 
                 hasLoaded = true;
@@ -86,14 +86,14 @@ public class Ghost1 {
             }
 
         }
-        if(e > 80){
+        if(e > 130){
             switch(state) {
                 case WALK: offset = 0; break;
                 case ATTK: offset = 4;
-                            if(spriteIndex == 6){
-                                state = State.WALK;
-                            }
-                            break;
+                    if(spriteIndex == 6){
+                        state = State.WALK;
+                    }
+                    break;
                 case RWALK: offset = 8; break;
                 case RATTK: offset = 12;
                     if(spriteIndex == 15){
@@ -118,7 +118,7 @@ public class Ghost1 {
         //sprite.layer().setRotation(body.getAngle());
 
         sprite.layer().setTranslation(
-                (body.getPosition().x / GameScreen.M_PER_PIXEL - 7),
+                (body.getPosition().x / GameScreen.M_PER_PIXEL+25),
                 body.getPosition().y / GameScreen.M_PER_PIXEL);
         walk(direction);
 
@@ -132,12 +132,12 @@ public class Ghost1 {
         Body body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(90 * TestScreen.M_PER_PIXEL/2,
-                sprite.layer().height()*TestScreen.M_PER_PIXEL / 2);
+        shape.setAsBox(40 * TestScreen.M_PER_PIXEL/2,
+                79 * TestScreen.M_PER_PIXEL / 2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 0.2f;
-        fixtureDef.friction = 0.1f;
+        fixtureDef.density = 0.4f;
+        fixtureDef.friction = 0.2f;
         fixtureDef.restitution = 0.35f;
         fixtureDef.filter.groupIndex = groupIndex;
 
@@ -177,8 +177,8 @@ public class Ghost1 {
     }
 
     public void walk(char direction){
-        if(direction == 'L') body.applyForce(new Vec2(-30.0f, 0.0f), body.getPosition());
-        else if(direction == 'R') body.applyForce(new Vec2(+30.0f, 0.0f), body.getPosition());
+        if(direction == 'L') body.applyForce(new Vec2(-25.0f, 0.0f), body.getPosition());
+        else if(direction == 'R') body.applyForce(new Vec2(+25.0f, 0.0f), body.getPosition());
 
     }
 }

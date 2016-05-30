@@ -15,7 +15,7 @@ import sut.game01.core.sprite.SpriteLoader;
 /**
  * Created by GGGCOM on 17/5/2559.
  */
-public class Ghost1 {
+public class Boss {
     private Sprite sprite;
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
@@ -27,6 +27,7 @@ public class Ghost1 {
     private Body other;
     private Clock clock;
     private int groupIndex;
+    public int bombCount = 0;
     private World world;
     private boolean checkDestroy = false;
 
@@ -39,7 +40,7 @@ public class Ghost1 {
     private char direction;
     private int timeDestroy = 0;
 
-    public Ghost1(final World world, final float x_px, final float y_px, final int groupIndex, final char direction){
+    public Boss(final World world, final float x_px, final float y_px, final int groupIndex, final char direction){
         this.world = world;
         this.groupIndex = groupIndex;
         this.direction = direction;
@@ -47,7 +48,7 @@ public class Ghost1 {
         if(direction == 'L')        state = State.WALK;
         else if(direction == 'R')   state = State.RWALK;
 
-        sprite = SpriteLoader.getSprite("images/sprites/ghost2.json");
+        sprite = SpriteLoader.getSprite("images/sprites/boss.json");
         sprite.addCallback(new Callback<Sprite>(){
             @Override
             public void onSuccess(Sprite result){
@@ -56,7 +57,7 @@ public class Ghost1 {
                         sprite.height() / 2f);
                 sprite.layer().setTranslation(x, y + 13f);
                 body = initPhysicsBody(world, x_px,
-                         y_px);
+                        y_px);
 
 
                 hasLoaded = true;
@@ -77,23 +78,26 @@ public class Ghost1 {
     public void update(int delta){
         e += delta;
         if(checkDestroy == true){
-            timeDestroy += delta;
-            if(timeDestroy >= 300){
-                sprite.layer().setVisible(false);
-                world.destroyBody(body);
-                checkDestroy = false;
-                timeDestroy = 0;
+            if(bombCount >= 3){
+                timeDestroy += delta;
+                if(timeDestroy >= 300){
+                    sprite.layer().setVisible(false);
+                    world.destroyBody(body);
+                    checkDestroy = false;
+                    timeDestroy = 0;
+                }
             }
 
+
         }
-        if(e > 80){
+        if(e > 150){
             switch(state) {
                 case WALK: offset = 0; break;
                 case ATTK: offset = 4;
-                            if(spriteIndex == 6){
-                                state = State.WALK;
-                            }
-                            break;
+                    if(spriteIndex == 6){
+                        state = State.WALK;
+                    }
+                    break;
                 case RWALK: offset = 8; break;
                 case RATTK: offset = 12;
                     if(spriteIndex == 15){
@@ -133,7 +137,7 @@ public class Ghost1 {
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(90 * TestScreen.M_PER_PIXEL/2,
-                sprite.layer().height()*TestScreen.M_PER_PIXEL / 2);
+                170*TestScreen.M_PER_PIXEL / 2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 0.2f;
@@ -164,6 +168,7 @@ public class Ghost1 {
             if(direction == 'L') body.applyForce(new Vec2(2500f, 2500f), body.getPosition());
             else if(direction == 'R') body.applyForce(new Vec2(-2500f, 2500f), body.getPosition());
             checkDestroy = true;
+            bombCount++;
         }
         if(c == "Hero"){
             if(direction == 'L') state = State.ATTK;
@@ -177,8 +182,8 @@ public class Ghost1 {
     }
 
     public void walk(char direction){
-        if(direction == 'L') body.applyForce(new Vec2(-30.0f, 0.0f), body.getPosition());
-        else if(direction == 'R') body.applyForce(new Vec2(+30.0f, 0.0f), body.getPosition());
+        if(direction == 'L') body.applyForce(new Vec2(-40.0f, 0.0f), body.getPosition());
+        else if(direction == 'R') body.applyForce(new Vec2(+40.0f, 0.0f), body.getPosition());
 
     }
 }

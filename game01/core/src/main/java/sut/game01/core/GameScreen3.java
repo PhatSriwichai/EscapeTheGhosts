@@ -12,9 +12,7 @@ import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.Contact;
 import playn.core.*;
 import playn.core.util.Clock;
-import sut.game01.core.character.Bomb;
-import sut.game01.core.character.Ghost1;
-import sut.game01.core.character.Hero;
+import sut.game01.core.character.*;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
 
@@ -24,7 +22,7 @@ import java.util.*;
 import static playn.core.PlayN.assets;
 import static playn.core.PlayN.graphics;
 
-public class GameScreen extends Screen {
+public class GameScreen3 extends Screen {
     private ScreenStack ss;
     private Image bgImage;
     private ImageLayer bgLayer;
@@ -52,6 +50,7 @@ public class GameScreen extends Screen {
     private Hero hero;
     private Ghost1 ghost1;
     private Ghost1 ghost2;
+
     private GamePauseScreen gamePause;
 
     public static float M_PER_PIXEL = 1/26.666667f;
@@ -65,6 +64,8 @@ public class GameScreen extends Screen {
     private HashMap<Bomb, String> bombHash;
     private List<Hero> heroMap;
     private List<Ghost1> ghostList1;
+    private List<GhostRun> ghostRun;
+    private List<Boss> boss;
     private static List<Bomb> bombList;
 
     private Queue que;
@@ -80,8 +81,9 @@ public class GameScreen extends Screen {
     private int ghostTime = 0;
     private int ghostTimeR = 0;
     private int killCount = 0;
-    private int killMax = 10;
+    private int killMax = 5;
     private int ghostCount = 0;
+    private int bossTime = 0;
 
     private float x = 0.0f;
     private float y = 0.0f;
@@ -90,7 +92,7 @@ public class GameScreen extends Screen {
     private boolean pauseCheck = true;
 
 
-    public GameScreen(final ScreenStack ss){
+    public GameScreen3(final ScreenStack ss){
         //===============================================================
         this.ss = ss;
         Vec2 gravity = new Vec2(0.0f,100.0f);
@@ -107,6 +109,8 @@ public class GameScreen extends Screen {
         heroMap = new ArrayList<Hero>();
         bombList = new ArrayList<Bomb>();
         ghostList1 = new ArrayList<Ghost1>();
+        ghostRun = new ArrayList<GhostRun>();
+        boss = new ArrayList<Boss>();
 
         bgImage = assets().getImage("images/background/bg1.png");
         bgLayer = graphics().createImageLayer(bgImage);
@@ -188,12 +192,12 @@ public class GameScreen extends Screen {
         });
 
         //==============================================================
-        hero = new Hero(world,12,14,1);
+        hero = new Hero(world,12,14,3);
         bodies.put(hero.getBody(), "hero_1");
 
 
     }
-    public GameScreen(){ }
+    public GameScreen3(){ }
 
     @Override
     public void wasShown() {
@@ -208,7 +212,7 @@ public class GameScreen extends Screen {
 
         Body ground = world.createBody(new BodyDef());
         EdgeShape groundShape = new EdgeShape();
-        groundShape.set(new Vec2(0,height-2), new Vec2(width, height-2));
+        groundShape.set(new Vec2(-width,height-2), new Vec2(width*2, height-2));
         ground.createFixture(groundShape, 0.0f);
 
         if(showDebugDraw){
@@ -237,22 +241,54 @@ public class GameScreen extends Screen {
                 if(a == hero.getBody()|| b == hero.getBody()){
                     //hero.contact(contact);
                 }
-                    for(Ghost1 g:ghostList1){
-                        if((a == hero.getBody()&& b == g.getBody()) || (b == hero.getBody()&& a == g.getBody())){
-                            g.contact(contact, "Hero");
-                            hero.contact(contact);
-                            heartCount--;
-                            checkHeart(heartCount);
-                        }
-                        for(Bomb bomb: bombList) {
-                            if ((a == bomb.getBody() && b == g.getBody()) || (b == bomb.getBody() && a == g.getBody())) {
-                                g.contact(contact, "Bomb");
-                                //killCount++;
-                                //checkPoint = true;
-                               // checkNumber();
-                            }
+                /*for(Ghost1 g:ghostList1){
+                    if((a == hero.getBody()&& b == g.getBody()) || (b == hero.getBody()&& a == g.getBody())){
+                        g.contact(contact, "Hero");
+                        hero.contact(contact);
+                        heartCount--;
+                        checkHeart(heartCount);
+                    }
+                    for(Bomb bomb: bombList) {
+                        if ((a == bomb.getBody() && b == g.getBody()) || (b == bomb.getBody() && a == g.getBody())) {
+                            g.contact(contact, "Bomb");
+                            //killCount++;
+                            //checkPoint = true;
+                            // checkNumber();
                         }
                     }
+                }
+                for(GhostRun g:ghostRun){
+                    if((a == hero.getBody()&& b == g.getBody()) || (b == hero.getBody()&& a == g.getBody())){
+                        g.contact(contact, "Hero");
+                        hero.contact(contact);
+                        heartCount--;
+                        checkHeart(heartCount);
+                    }
+                    for(Bomb bomb: bombList) {
+                        if ((a == bomb.getBody() && b == g.getBody()) || (b == bomb.getBody() && a == g.getBody())) {
+                            g.contact(contact, "Bomb");
+                            //killCount++;
+                            //checkPoint = true;
+                            // checkNumber();
+                        }
+                    }
+                }*/
+                for(Boss g:boss){
+                    if((a == hero.getBody()&& b == g.getBody()) || (b == hero.getBody()&& a == g.getBody())){
+                        g.contact(contact, "Hero");
+                        hero.contact(contact);
+                        heartCount--;
+                        checkHeart(heartCount);
+                    }
+                    for(Bomb bomb: bombList) {
+                        if ((a == bomb.getBody() && b == g.getBody()) || (b == bomb.getBody() && a == g.getBody())) {
+                            g.contact(contact, "Bomb");
+                            //killCount++;
+                            //checkPoint = true;
+                            // checkNumber();
+                        }
+                    }
+                }
                 for(Bomb bomb: bombList){
                     if(a==bomb.getBody()|| b == bomb.getBody() ){
                         //bomb.contact(contact, hero);
@@ -267,12 +303,33 @@ public class GameScreen extends Screen {
             public void endContact(Contact contact) {
                 Body a = contact.getFixtureA().getBody();
                 Body b = contact.getFixtureB().getBody();
-                for(Ghost1 g:ghostList1){
+                /*for(Ghost1 g:ghostList1){
                     for(Bomb bomb: bombList) {
                         if ((a == bomb.getBody() && b == g.getBody()) || (b == bomb.getBody() && a == g.getBody())) {
                             killCount++;
                             checkPoint = true;
                             checkNumber();
+                        }
+                    }
+                }
+                for(GhostRun g:ghostRun){
+                    for(Bomb bomb: bombList) {
+                        if ((a == bomb.getBody() && b == g.getBody()) || (b == bomb.getBody() && a == g.getBody())) {
+                            killCount++;
+                            checkPoint = true;
+                            checkNumber();
+                        }
+                    }
+                }*/
+                for(Boss g:boss){
+                    for(Bomb bomb: bombList) {
+                        if ((a == bomb.getBody() && b == g.getBody()) || (b == bomb.getBody() && a == g.getBody())) {
+                            if(g.bombCount >= 3){
+                                killCount++;
+                                checkPoint = true;
+                                checkNumber();
+                            }
+
                         }
                     }
                 }
@@ -288,7 +345,31 @@ public class GameScreen extends Screen {
                 Body a = contact.getFixtureA().getBody();
                 Body b = contact.getFixtureB().getBody();
 
-                for(Ghost1 g:ghostList1){
+                /*for(Ghost1 g:ghostList1){
+                    if((a == hero.getBody()&& b == g.getBody()) || (b == hero.getBody()&& a == g.getBody())){
+                        hCount++;
+                        if(hCount > 1000){
+                            g.contact(contact, "Hero");
+                            hero.contact(contact);
+                            heartCount--;
+                            checkHeart(heartCount);
+                            hCount = 0;
+                        }
+                    }
+                }
+                for(GhostRun g:ghostRun){
+                    if((a == hero.getBody()&& b == g.getBody()) || (b == hero.getBody()&& a == g.getBody())){
+                        hCount++;
+                        if(hCount > 1000){
+                            g.contact(contact, "Hero");
+                            hero.contact(contact);
+                            heartCount--;
+                            checkHeart(heartCount);
+                            hCount = 0;
+                        }
+                    }
+                }*/
+                for(Boss g:boss){
                     if((a == hero.getBody()&& b == g.getBody()) || (b == hero.getBody()&& a == g.getBody())){
                         hCount++;
                         if(hCount > 1000){
@@ -305,7 +386,13 @@ public class GameScreen extends Screen {
 
 
         this.layer.add(hero.layer());
-        for(Ghost1 g:ghostList1){
+        /*for(Ghost1 g:ghostList1){
+            this.layer.add(g.layer());
+        }
+        for(GhostRun g:ghostRun){
+            this.layer.add(g.layer());
+        }*/
+        for(Boss g:boss){
             this.layer.add(g.layer());
         }
         for(ImageLayer l: numList) {
@@ -329,7 +416,15 @@ public class GameScreen extends Screen {
         if(pauseCheck == true){
             hero.update(delta);
 
-            for(Ghost1 g:ghostList1){
+            /*for(Ghost1 g:ghostList1){
+                g.update(delta);
+                this.layer.add(g.layer());
+            }
+            for(GhostRun g:ghostRun){
+                g.update(delta);
+                this.layer.add(g.layer());
+            }*/
+            for(Boss g:boss){
                 g.update(delta);
                 this.layer.add(g.layer());
             }
@@ -342,21 +437,47 @@ public class GameScreen extends Screen {
             }
             ghostTimeR++;
             ghostTime++;
+            bossTime++;
             //if(ghostCount < killMax){
-                if(ghostTime > 50){
+            /*if(ghostTime > 50){
+                int randomNum = 0 + (int)(Math.random() * 2);
+                //System.out.println(randomNum);
+                if(randomNum == 1){
+                    //ghostList1.add(new Ghost1(world,hero.getBody().getPosition().x+7, hero.getBody().getPosition().y, -2, 'L'));
+                }else if(randomNum == 0){
+                    //ghostList1.add(new Ghost1(world,hero.getBody().getPosition().x-7, hero.getBody().getPosition().y, -2, 'R'));
+                }
+                ghostTime = 0;
+                ghostCount++;
+            }
+            if(ghostTimeR > 100){
+                int randomNum = 0 + (int)(Math.random() * 2);
+                //System.out.println(randomNum);
+                if(randomNum == 1){
+                    //ghostRun.add(new GhostRun(world,hero.getBody().getPosition().x+10, hero.getBody().getPosition().y, -2, 'L'));
+                }else if(randomNum == 0){
+                    //ghostRun.add(new GhostRun(world,hero.getBody().getPosition().x-10, hero.getBody().getPosition().y, -2, 'R'));
+                }
+                ghostTimeR = 0;
+                ghostCount++;
+            }*/
+            if(ghostCount <= killMax){
+                if(bossTime > 100){
                     int randomNum = 0 + (int)(Math.random() * 2);
                     //System.out.println(randomNum);
                     if(randomNum == 1){
-                        ghostList1.add(new Ghost1(world,hero.getBody().getPosition().x+7, hero.getBody().getPosition().y, -2, 'L'));
+                        boss.add(new Boss(world,hero.getBody().getPosition().x+10, hero.getBody().getPosition().y, -2, 'L'));
                     }else if(randomNum == 0){
-                        ghostList1.add(new Ghost1(world,hero.getBody().getPosition().x-7, hero.getBody().getPosition().y, -2, 'R'));
+                        boss.add(new Boss(world,hero.getBody().getPosition().x-10, hero.getBody().getPosition().y, -2, 'R'));
                     }
-                    ghostTime = 0;
+                    bossTime = 0;
                     ghostCount++;
                 }
+            }
+
             //}else
             if(killCount >= killMax){
-                try {
+                /*try {
 
                     String content = Integer.toString(killCount)+"\n";
 
@@ -403,8 +524,8 @@ public class GameScreen extends Screen {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-                ss.push(new GameWinScreen(ss, 1));
+                }*/
+                ss.push(new GameWinScreen(ss, 3));
             }
             bgLayer.setTranslation(hero.bg_x, hero.bg_y);
         }
@@ -417,10 +538,15 @@ public class GameScreen extends Screen {
         if(pauseCheck == true){
 
             hero.paint(clock);
-            for(Ghost1 g:ghostList1){
+            /*for(Ghost1 g:ghostList1){
                 g.paint(clock);
             }
-
+            for(GhostRun g:ghostRun){
+                g.paint(clock);
+            }*/
+            for(Boss g:boss){
+                g.paint(clock);
+            }
             for(Bomb b: bombList){
                 b.paint(clock);
             }
@@ -436,7 +562,7 @@ public class GameScreen extends Screen {
     }
 
     public void addBomb(Bomb b){
-       bombList.add(b);
+        bombList.add(b);
     }
 
     public void checkHeart(int count){
@@ -444,7 +570,7 @@ public class GameScreen extends Screen {
             case 2: heart3.setVisible(false); break;
             case 1: heart2.setVisible(false); break;
             case 0: heart.setVisible(false);
-                ss.push(new GameOverScreen(ss));
+                ss.push(new GameOverScreen(ss, 3));
                 break;
         }
     }
