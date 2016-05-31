@@ -84,7 +84,7 @@ public class HomeScreen extends Screen {
       this.layer.add(bgLayer);
       this.layer.add(startLayer);
       this.layer.add(optionLayer);
-      this.layer.add(creditLayer);
+      //this.layer.add(creditLayer);
   }
 
   public void resetScore(){

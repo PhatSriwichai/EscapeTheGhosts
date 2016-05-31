@@ -17,6 +17,9 @@ public class GameOverScreen extends Screen {
     private ImageLayer back;
     private Image overImage;
     private ImageLayer over;
+    private Image mainImage;
+    private ImageLayer main;
+
     private int screenIndex;
 
     public GameOverScreen(final ScreenStack ss, final int screenIndex){
@@ -32,6 +35,9 @@ public class GameOverScreen extends Screen {
         overImage = assets().getImage("images/pauseZone/gameOver.png");
         over = graphics().createImageLayer(overImage);
         over.setTranslation(30f, 30f);
+        mainImage = assets().getImage("images/pauseZone/mainButtonSmall.png");
+        main = graphics().createImageLayer(mainImage);
+        main.setTranslation(550f, 430f);
 
         back.addListener(new Mouse.LayerAdapter() {
             @Override
@@ -43,6 +49,12 @@ public class GameOverScreen extends Screen {
                 }
             }
         });
+        main.addListener(new Mouse.LayerAdapter(){
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event) {
+                ss.push(new HomeScreen(ss));
+            }
+        });
 
     }
 
@@ -52,6 +64,7 @@ public class GameOverScreen extends Screen {
         this.layer.add(bg);
         this.layer.add(back);
         this.layer.add(over);
+        this.layer.add(main);
     }
 }
 
