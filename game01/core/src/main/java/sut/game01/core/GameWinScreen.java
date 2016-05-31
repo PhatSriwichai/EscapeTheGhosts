@@ -41,6 +41,7 @@ public class GameWinScreen extends Screen {
     private Image nextImage;
     private ImageLayer next;
     private int totalKill = 0;
+    private int scoreKill = 0;
     private int screenIndex;
 
     public GameWinScreen(final ScreenStack ss, final int screenIndex){
@@ -120,9 +121,9 @@ public class GameWinScreen extends Screen {
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
                 switch (screenIndex){
-                    case 1: ss.push(new GameScreen(ss));
-                    case 2: ss.push(new GameScreen2(ss));
-                    case 3: ss.push(new GameScreen3(ss));
+                    case 1: ss.push(new GameScreen(ss)); break;
+                    case 2: ss.push(new GameScreen2(ss)); break;
+                    case 3: ss.push(new GameScreen3(ss)); break;
                 }
             }
         });
@@ -137,9 +138,10 @@ public class GameWinScreen extends Screen {
         next.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
+                System.out.println(screenIndex);
                 switch (screenIndex){
-                    case 1: ss.push(new GameScreen2(ss));
-                    case 2: ss.push(new GameScreen3(ss));
+                    case 1: ss.push(new GameScreen2(ss)); break;
+                    case 2: ss.push(new GameScreen3(ss)); break;
                 }
 
             }
@@ -157,23 +159,29 @@ public class GameWinScreen extends Screen {
             //Instantiate the BufferedReader Class
             //BufferedReader bufferReader = new BufferedReader(inputFile);
             FileInputStream inputFile = new FileInputStream(file);
-            List<Integer> line = new ArrayList();
+            FileInputStream inputFile2 = new FileInputStream(file2);
+
+            scoreKill = inputFile.read();
+            totalKill = inputFile2.read();
             //Variable to hold the one line data
 
-
+            inputFile.close();
+            inputFile2.close();
             // Read file line by line and print on the console
-            while (inputFile.read() != -1)   {
-                    line.add(inputFile.read());
-            }
-            for(int l: line){
-                if(l != 255 && l != -1){
-                    totalKill += l;
-                }
-            }
+            //while (inputFile.read() != -1)   {
+            //}
+            //for(int l: line){
+                //if(l != 255 && l != -1){
 
-            FileOutputStream output = new FileOutputStream(file);
+                //}
+            //}
+            System.out.print("total = ");
+            System.out.println(scoreKill+totalKill);
+            FileOutputStream output = new FileOutputStream(file2);
             //Writer w = new OutputStreamWriter(output, "UTF-8");
-            output.write(totalKill);
+            output.write(totalKill+scoreKill);
+            checkNumber(totalKill+scoreKill);
+            output.close();
 
 
 
@@ -207,7 +215,7 @@ public class GameWinScreen extends Screen {
             this.layer.add(l);
             l.setVisible(false);
         }
-        checkNumber(totalKill);
+        checkNumber(totalKill+scoreKill);
     }
 
     public void checkNumber(int num){

@@ -176,7 +176,7 @@ public class Hero{
                             state = State.IDLE;
                         else
                             state = State.RUN;
-                        bg_x += 4;
+                        //bg_x += 4;
                         body.applyLinearImpulse(new Vec2(-20.0f,0), body.getPosition());
                         sprite.layer().setTranslation(body.getPosition().x / TestScreen.M_PER_PIXEL -10,
                                 body.getPosition().y / TestScreen.M_PER_PIXEL);
@@ -186,7 +186,7 @@ public class Hero{
                             state = State.RIDLE;
                         else
                             state = State.RRUN;
-                        bg_x -= 4;
+                        //bg_x -= 4;
                         body.applyLinearImpulse(new Vec2(20.0f,0), body.getPosition());
                     }
                     if(event.key() == Key.SPACE){

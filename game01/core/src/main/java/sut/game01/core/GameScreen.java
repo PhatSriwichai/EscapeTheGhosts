@@ -110,8 +110,8 @@ public class GameScreen extends Screen {
 
         bgImage = assets().getImage("images/background/bg1.png");
         bgLayer = graphics().createImageLayer(bgImage);
-        bgLayer.setTranslation(200,0);
-        graphics().rootLayer().add(bgLayer);
+        //bgLayer.setTranslation(200,0);
+        //graphics().rootLayer().add(bgLayer);
 
         heartImage = assets().getImage("images/item/heart.png");
         heart = graphics().createImageLayer(heartImage);
@@ -198,7 +198,7 @@ public class GameScreen extends Screen {
     @Override
     public void wasShown() {
         super.wasShown();
-        //this.layer.add(bgLayer);
+        this.layer.add(bgLayer);
         this.layer.add(heroProfile);
         this.layer.add(heart);
         this.layer.add(heart2);
@@ -357,47 +357,16 @@ public class GameScreen extends Screen {
             //}else
             if(killCount >= killMax){
                 try {
-
-                    String content = Integer.toString(killCount)+"\n";
-
                     File file = new File("C:/cygwin64/home/GGGCOM/games/28052016/EscapeTheGhosts/game01/assets/src/main/resources/assets/content/maxKill.txt");
 
                     // if file doesnt exists, then create it
                     if (!file.exists()) {
                         file.createNewFile();
                     }
-                    //Writer output;
-
-                    //FileReader inputFile = new FileReader("C:/cygwin64/home/GGGCOM/games/28052016/EscapeTheGhosts/game01/assets/src/main/resources/assets/content/maxKill.txt");
                     FileInputStream inputFile = new FileInputStream(file);
-                    //BufferedReader bufferReader = new BufferedReader(inputFile);
-                    //System.out.println(inputFile.read());
-
-                    List<Integer> line = new ArrayList();
-                    String lineRead = new String("0");
-
-                    while (inputFile.read() != -1)   {
-                        line.add(inputFile.read());
-
-                    }
-                    line.add(killCount);
-
-                    //FileWriter fw = new FileWriter("C:/cygwin64/home/GGGCOM/games/28052016/EscapeTheGhosts/game01/assets/src/main/resources/assets/content/maxKill.txt");
-                    //BufferedWriter output = new BufferedWriter(fw);
                     FileOutputStream output = new FileOutputStream(file);
-                    //Writer w = new OutputStreamWriter(output, "UTF-8");
-                    for(int l:line){
-                        output.write(l);
-                        System.out.println(l);
-                        //output.write(10);
-                        //output.;
-                    }
+                    output.write(killCount);
                     output.close();
-                    //output.newLine();
-                    //output.append('\n');
-                    //output.flush();
-                    //bufferReader.close();
-                    //output.close();
 
                     System.out.println("Done");
 
@@ -444,7 +413,7 @@ public class GameScreen extends Screen {
             case 2: heart3.setVisible(false); break;
             case 1: heart2.setVisible(false); break;
             case 0: heart.setVisible(false);
-                ss.push(new GameOverScreen(ss));
+                ss.push(new GameOverScreen(ss, 1));
                 break;
         }
     }
@@ -475,7 +444,7 @@ public class GameScreen extends Screen {
         back = killMax%10;
         maxList.get(10).setTranslation(445f,15f);
         maxList.get(front).setTranslation(475f,15f);
-        maxList.get(back).setTranslation(495f,15f);
+        maxList.get(back).setTranslation(505f,15f);
         this.layer.add(maxList.get(10));
         this.layer.add(maxList.get(front));
         this.layer.add(maxList.get(back));
