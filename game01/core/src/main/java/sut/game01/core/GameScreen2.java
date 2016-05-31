@@ -59,7 +59,7 @@ public class GameScreen2 extends Screen {
     public static float M_PER_PIXEL = 1/26.666667f;
     private static int width = 36;
     private static int height = 18;
-    private boolean showDebugDraw = true;
+    private boolean showDebugDraw = HomeScreen.showDebugDraw;
     private DebugDrawBox2D debugDraw;
 
     private static World world;

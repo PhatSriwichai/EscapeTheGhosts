@@ -6,6 +6,10 @@ import playn.core.Mouse;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
 import static playn.core.PlayN.assets;
 import static playn.core.PlayN.graphics;
 
@@ -25,6 +29,7 @@ public class HomeScreen extends Screen {
 
   private Image creditButton;
   private ImageLayer creditLayer;
+  public static boolean showDebugDraw = false;
 
 
   
@@ -43,7 +48,7 @@ public class HomeScreen extends Screen {
     //graphics().rootLayer().add(startLayer);
     startLayer.setTranslation(245,140);
 
-    optionButton = assets().getImage("images/optionButton.png");
+    optionButton = assets().getImage("images/button/score.png");
     optionLayer = graphics().createImageLayer(optionButton);
     //graphics().rootLayer().add(startLayer);
     optionLayer.setTranslation(245,220);
@@ -60,8 +65,16 @@ public class HomeScreen extends Screen {
         ss.push(levelScreen);
       }
     });
+    optionLayer.addListener(new Mouse.LayerAdapter(){
+      @Override
+      public void onMouseUp(Mouse.ButtonEvent event) {
+        ss.push(new ResetScreen(ss));
+      }
 
-      
+
+    });
+
+
 }
 
   @Override
@@ -72,6 +85,31 @@ public class HomeScreen extends Screen {
       this.layer.add(startLayer);
       this.layer.add(optionLayer);
       this.layer.add(creditLayer);
+  }
+
+  public void resetScore(){
+    try{
+      //Create object of FileReader
+      //FileReader inputFile = new FileReader("C:/cygwin64/home/GGGCOM/games/28052016/EscapeTheGhosts/game01/assets/src/main/resources/assets/content/maxKill.txt");
+      //File file = new File("C:/cygwin64/home/GGGCOM/games/28052016/EscapeTheGhosts/game01/assets/src/main/resources/assets/content/maxKill.txt");
+      File file2 = new File("C:/cygwin64/home/GGGCOM/games/28052016/EscapeTheGhosts/game01/assets/src/main/resources/assets/content/totalKill.txt");
+      if (!file2.exists()) {
+        file2.createNewFile();
+      }
+
+      FileOutputStream output = new FileOutputStream(file2);
+      //Writer w = new OutputStreamWriter(output, "UTF-8");
+      output.write(0);
+      output.close();
+
+      ss.push(new GameWinScreen(ss, 0));
+
+
+      //Close the buffer reader
+
+    }catch(Exception e){
+      System.out.println("Error while reading file line by line:" + e.getMessage());
+    }
   }
 }
 
