@@ -494,7 +494,7 @@ public class GameScreen3 extends Screen {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                ss.push(new GameWinScreen(ss, 3));
+                ss.push(new GameEndScreen(ss));
             }
             bgLayer.setTranslation(hero.bg_x, hero.bg_y);
         }
