@@ -80,6 +80,7 @@ public class GhostRun {
             timeDestroy += delta;
             if(timeDestroy >= 300){
                 sprite.layer().setVisible(false);
+                //sprite.layer().destroy();
                 world.destroyBody(body);
                 checkDestroy = false;
                 timeDestroy = 0;
