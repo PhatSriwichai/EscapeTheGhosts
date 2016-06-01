@@ -67,7 +67,7 @@ public class GamePauseScreen extends Screen {
         this.layer.add(bg);
         this.layer.add(pauseZone);
         this.layer.add(resume);
-        this.layer.add(setting);
+        //this.layer.add(setting);
         this.layer.add(main);
 
     }
